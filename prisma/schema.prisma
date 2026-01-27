@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Énumérations pour les champs de statut
+enum UserRole {
+  customer
+  admin
+}
+
+enum CommandeStatus {
+  pending
+  shipped
+  delivered
+  cancelled
+}
+
+enum PaymentMethod {
+  credit_card
+  paypal
+  bank_transfer
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+}
+
+// Modèle Utilisateur
+model User {
+  id                     Int       @id @default(autoincrement())
+  username               String   
+  email                  String    @unique
+  emailVerified          DateTime?
+  password_hash          String
+  first_name             String?
+  last_name              String?
+  address                String?
+  phone                  String?
+  role                   UserRole  @default(customer)
+  created_at             DateTime  @default(now())
+
+  // Relations
+  commande Commande[]
+  avis     Avis[]
+
+  @@map("users")
+}
+
+// Modèle Catégorie (hiérarchique)
+model Category {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  description String?
+  parent_id   Int?
+  parent      Category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id], onDelete: Cascade)
+  children    Category[] @relation("CategoryHierarchy")
+
+  // Relations
+  products Product[]
+
+  @@map("categories")
+}
+
+// Modèle Produit
+model Product {
+  id             Int       @id @default(autoincrement())
+  name           String
+  description    String?
+  price          Float
+  stock_quantity Int       @default(0)
+  category_id    Int?
+  category       Category? @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  image_url      String?
+  created_at     DateTime  @default(now())
+
+  // Relations
+  commande_items CommandeItem[]
+  avis           Avis[]
+
+  @@map("products")
+}
+
+// Modèle Commande
+model Commande {
+  id               Int            @id @default(autoincrement())
+  user_id          Int
+  user             User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  total_amount     Float
+  status           CommandeStatus @default(pending)
+  shipping_address String?
+  created_at       DateTime       @default(now())
+
+  // Relations
+  commande_items CommandeItem[]
+  payment        Payment?
+
+  @@map("commande")
+}
+
+// Modèle Élément de Commande (table de jonction pour commandes et produits)
+model CommandeItem {
+  id          Int      @id @default(autoincrement())
+  commande_id Int
+  commande    Commande @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  product_id  Int
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  quantity    Int
+  unit_price  Float
+
+  @@map("commande_items")
+}
+
+// Modèle Paiement
+model Payment {
+  id             Int           @id @default(autoincrement())
+  commande_id    Int           @unique
+  commande       Commande      @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  payment_method PaymentMethod
+  amount         Float
+  status         PaymentStatus @default(pending)
+  transaction_id String?
+  created_at     DateTime      @default(now())
+
+  @@map("payments")
+}
+
+// Modèle Avis
+model Avis {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  product_id Int
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  note       Int
+  comment    String?
+  created_at DateTime @default(now())
+
+  @@map("avis")
+}
