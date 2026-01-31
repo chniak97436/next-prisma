@@ -55,7 +55,17 @@ export default function Home() {
     setRippleEffect(true);
     setTimeout(() => setRippleEffect(false), 600);
   };
-
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/products');
+      const data = await response.json();
+      const pdt = data.data.name;
+      console.log('Products :', pdt);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+  fetchProducts();
   return (
     <motion.div
       initial="hidden"

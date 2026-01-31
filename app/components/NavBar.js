@@ -1,12 +1,40 @@
 "use client";
 import Link from 'next/link';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { isAdmin } from '../../lib/utils/auth';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { isAdmin, isCustomer } from '../../lib/utils/auth';
 
 export default function NavBar({ user }) {
+  const router = useRouter();
   const admin = isAdmin(user?.role);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [stats, setStats] = useState({
+    categories: []
+  });
+
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        // Fetch categories 
+        const categoriesRes = await fetch('/api/categories');
+        const categoriesData = await categoriesRes.json();
+        const categoriesNav = categoriesData.data || [];
+        // use categoriesNav as needed
+        setStats({
+          categories: categoriesNav
+        });
+        console.log("categoriesStats : ", categoriesNav);
+
+      } catch (error) {
+        console.error('Error fetching categories for NavBar:', error);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
+
 
   return (
     <nav className="glass-strong text-white shadow-2xl animate-slide-in-left fixed top-0 left-0 right-0 z-50 backdrop-blur-md">
@@ -25,6 +53,28 @@ export default function NavBar({ user }) {
             <Link href="/" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
               Accueil
             </Link>
+            <Link href="/products" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
+              Tous les produits
+            </Link>
+            {(!user || isCustomer(user?.role)) && (
+              <select
+                onChange={(e) => {
+                  if (e.target.value) {
+                    router.push(`/categories/${e.target.value}`);
+                  }
+                }}
+                className="bg-transparent text-white border border-white  px-3 py-2 text-sm font-medium transition-all duration-300"
+                defaultValue=""
+              >
+                <option className="text-black bg-transparent " value="" disabled>Choisir une catégorie</option>
+      
+                {stats.categories.map((category) => (
+                  <option key={category.id} value={category.id} className='text-black border-none bg-transparent'>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            )}
             {!user ? (
               <>
                 <Link href="/login" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
@@ -56,9 +106,9 @@ export default function NavBar({ user }) {
             >
               <svg className="h-6 w-6 fill-current" viewBox="0 0 24 24">
                 {isMenuOpen ? (
-                  <path fillRule="evenodd" d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 0 1 1.414 1.414l-4.828 4.829 4.828 4.828z"/>
+                  <path fillRule="evenodd" d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 0 1 1.414 1.414l-4.828 4.829 4.828 4.828z" />
                 ) : (
-                  <path fillRule="evenodd" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
+                  <path fillRule="evenodd" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z" />
                 )}
               </svg>
             </button>
@@ -69,9 +119,30 @@ export default function NavBar({ user }) {
         {isMenuOpen && (
           <div className="md:hidden animate-slide-in-left">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white bg-opacity-10 rounded-lg mt-2 backdrop-blur-sm">
-              <Link href="/" className="block hover:text-yellow-300 px-3 py-2 rounded-md text-base font-medium transition-all duration-300">
+              <Link href="/" className="block text-gray-500 hover:text-black px-3 py-2  text-base font-medium transition-all duration-300">
                 Accueil
               </Link>
+              <Link href="/products" className="text-gray-500 hover:text-black px-3 py-2  text-sm font-medium transition-all duration-300 transform hover:scale-105 ">
+              Tous les produits
+            </Link>
+              {(!user || isCustomer(user?.role)) && (
+                <select
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      router.push(`/categories/${e.target.value}`);
+                    }
+                  }}
+                  className="block w-full bg-transparent text-white border border-white rounded-md px-3 py-2 text-base font-medium hover:bg-white hover:bg-opacity-10 transition-all duration-300"
+                  defaultValue=""
+                >
+                  <option value="" disabled>Choisir une catégorie</option>
+                  {stats.categories.map((category) => (
+                    <option key={category.id} value={category.id} className="text-black">
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               {!user ? (
                 <>
                   <Link href="/login" className="block hover:text-yellow-300 px-3 py-2 rounded-md text-base font-medium transition-all duration-300">
