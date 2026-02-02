@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAdmin, isCustomer } from '../../lib/utils/auth';
+import { useCart } from './CartContext';
 
 export default function NavBar({ user }) {
   const router = useRouter();
@@ -11,8 +12,11 @@ export default function NavBar({ user }) {
   const [stats, setStats] = useState({
     categories: []
   });
+  const { getTotalItems } = useCart();
 
-
+  const GoToCart = () =>{
+    router.push("/cart")
+  }
   useEffect(() => {
     const fetchAllData = async () => {
       try {
@@ -67,7 +71,7 @@ export default function NavBar({ user }) {
                 defaultValue=""
               >
                 <option className="text-black bg-transparent " value="" disabled>Choisir une catégorie</option>
-      
+
                 {stats.categories.map((category) => (
                   <option key={category.id} value={category.id} className='text-black border-none bg-transparent'>
                     {category.name}
@@ -93,6 +97,18 @@ export default function NavBar({ user }) {
                   <Link href="/admin" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
                     Admin
                   </Link>
+                )}
+                {getTotalItems() > 0 && (
+                  <div className="relative">
+                    <button onClick={GoToCart}>
+                    <svg className="h-6 w-6 text-white hover:text-yellow-300 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13v8a2 2 0 002 2h10a2 2 0 002-2v-3" />
+                    </svg>
+                    </button>
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {getTotalItems()}
+                    </span>
+                  </div>
                 )}
               </>
             )}
@@ -123,8 +139,8 @@ export default function NavBar({ user }) {
                 Accueil
               </Link>
               <Link href="/products" className="text-gray-500 hover:text-black px-3 py-2  text-sm font-medium transition-all duration-300 transform hover:scale-105 ">
-              Tous les produits
-            </Link>
+                Tous les produits
+              </Link>
               {(!user || isCustomer(user?.role)) && (
                 <select
                   onChange={(e) => {
@@ -161,6 +177,16 @@ export default function NavBar({ user }) {
                     <Link href="/admin" className="block hover:text-yellow-300 px-3 py-2 rounded-md text-base font-medium transition-all duration-300">
                       Admin
                     </Link>
+                  )}
+                  {getTotalItems() > 0 && (
+                    <div className="flex items-center px-3 py-2">
+                      <svg className="h-6 w-6 text-gray-500 hover:text-black transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13v8a2 2 0 002 2h10a2 2 0 002-2v-3" />
+                      </svg>
+                      <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {getTotalItems()}
+                      </span>
+                    </div>
                   )}
                 </>
               )}

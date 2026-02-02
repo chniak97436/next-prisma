@@ -10,6 +10,9 @@ export async function GET(request, { params }) {
     try {
         const product = await prisma.product.findUnique({
             where: { id: parseInt(id, 10) },
+            include: {
+                category: true,
+            },
         });
         if (!product) {
             return badRequest('Produit non trouvé');
