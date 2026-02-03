@@ -49,18 +49,17 @@ export default function productId({ params }) {
 
     //ADDTOCART---------------
     const handleAddToCart = () => {
-    // Petit check de sécurité pour voir ce qu'il y a dans "product"
-    console.log("Tentative d'ajout du produit :", product);
+        // Petit check de sécurité pour voir ce qu'il y a dans "product"
+        console.log("Tentative d'ajout du produit :", product);
 
-    if (!product) return;
-
-    addToCart({
-        id: product.id || product._id, // Sécurité si l'ID vient de MongoDB/Prisma
-        name: product.name,
-        price: product.price,
-        image_url: product.image_url,
-    });
-};
+        if (!product) return;
+        addToCart({
+            id: product.id || product._id, // Sécurité si l'ID vient de MongoDB/Prisma
+            name: product.name,
+            price: product.price,
+            image_url: product.image_url,
+        });
+    };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div className='text-red-600 text-3xl font-bold'>Error: {error}</div>;
