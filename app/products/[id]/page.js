@@ -2,7 +2,7 @@
 import React, { use, useState, useEffect } from 'react'
 import Image from 'next/image';
 import NavBar from '@/app/components/NavBar';
-import jwt from 'jsonwebtoken'
+import { jwtDecode } from 'jwt-decode'
 import { useCart } from '../../components/CartContext';
 export default function productId({ params }) {
     const { id } = use(params);
@@ -35,7 +35,7 @@ export default function productId({ params }) {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                const decoded = jwt.decode(token);
+                const decoded = jwtDecode(token);
                 setUser({
                     name: decoded.name?.name || decoded.name || '',
                     role: decoded.name?.role || decoded.role || '',
@@ -67,25 +67,25 @@ export default function productId({ params }) {
 
     return (
         <>
+            <main className='mt-0 w-full relative h-dvh flex items-center justify-center bg-[#292322]'>
             <NavBar user={{ name: user?.name, role: user?.role }} />
-            <main className='mt-0 w-screen relative h-screen flex items-center justify-center bg-blue-400'>
-                <div className=' w-[90%] my-auto bg-green-800 '>
+                <div className=' w-[90%] my-auto bg-[#F5CC60] '>
                     <div className='mt-20 w-full'>
-                        <h1 className='text-center text-yellow-600 text-4xl font-bold '>{product.name}</h1>
+                        <h1 className='text-center text-[#292322] text-4xl font-bold '>{product.name}</h1>
                     </div>
-                    <div className=' w-[80%] border bg-yellow-600 mb-10 shadow-lg mx-auto'>
-                        <div className='flex mx-auto mt-8 rounded-md  shadow-lg w-auto bg-transparent'>
+                    <div className=' w-[80%]  bg-[#F5CC60] mb-10  mx-auto'>
+                        <div className='flex mx-auto mt-8 rounded-md   w-auto bg-transparent'>
                             <Image src={product.image_url} alt={product.name} width={400} height={300} className='w-[50%] autofill bg-cover   mx-auto' />
 
                         </div>
-                        <div className='flex relative flex-col items-start p-4'>
+                        <div className='flex text-[#292322] relative flex-col items-start p-4'>
                             {/* <h1>Catégorie : {product.category?.name || 'Aucune'}</h1> */}
                             <h1 className='px-4 py-4'>Description : {product.description}</h1>
                             {product.stock_quantity > 0 ? <h1 className='px-4 py-4 text-green-800'>Stock : {product.stock_quantity}</h1> : <h1 className='px-4 py-4 text-red-800 font-extrabold'>Épuisé</h1>}
-                            <h2 className='px-4 py-4 absolute bottom-0 right-0 font-bold text-2xl'>prix : {product.price} €</h2>
+                            <h2 className='px-4 py-4 absolute bottom-0 right-0 font-bold text-[#292322] text-4xl'>Prix : {product.price} €</h2>
                             {/* Add more product fields as needed */}
                             <p className='px-4 py-4 text-xs italic'>Ref : {product.id}.</p>
-                            <button onClick={handleAddToCart} className="px-4 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium   rounded-lg transition-colors duration-200 flex items-center justify-center whitespace-nowrap">
+                            <button onClick={handleAddToCart} className="px-4 py-4 bg-[#292322] hover:bg-[#2b2827] text-white font-medium   rounded-lg transition-colors duration-200 flex items-center justify-center whitespace-nowrap">
                                 <svg className=" w-5 h-5 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13v8a2 2 0 002 2h10a2 2 0 002-2v-3" />
                                 </svg>

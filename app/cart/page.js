@@ -4,11 +4,11 @@ import Image from 'next/image';
 import NavBar from '@/app/components/NavBar';
 import jwt from 'jsonwebtoken'
 import { useCart } from './../components/CartContext';
-import { CloudLightning } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
-  const [user, setUser] = useState(null);
-
+  const [user, setUser] = useState("");
+  const router = useRouter();
   // On récupère tout ce dont on a besoin depuis le contexte
   const {
     cart,
@@ -19,7 +19,7 @@ export default function CartPage() {
     getTotalItems,
     clearCart
   } = useCart();
-  
+
   // Gestion du JWT (inchangé)
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -36,12 +36,17 @@ export default function CartPage() {
     }
   }, []);
   console.log("Contenu du panier :", cart);
+
+  // switch commande
+  const goToPay = () => {
+    router.push("/commande")
+  }
   return (
-    <>
-      <NavBar user={{ name: user?.name, role: user?.role }} />
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+
+      <main className="h-dvh min-w-full bg-[#242124] py-8 px-4">
+        <NavBar user={{ name: user?.name, role: user?.role }} />
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Votre Panier</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Votre Panier : {user.name}</h1>
 
           {cart.length === 0 ? (
             <div className="text-center bg-white p-10 rounded-xl shadow">
@@ -114,7 +119,7 @@ export default function CartPage() {
                 <div className="text-right">
                   <p className="text-gray-600">Total ({getTotalItems()} articles) :</p>
                   <p className="text-3xl font-extrabold text-gray-900">{getTotalPrice().toFixed(2)} €</p>
-                  <button className="mt-4 w-full md:w-auto px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">
+                  <button onClick={goToPay} className="mt-4 w-full md:w-auto px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition">
                     Passer à la caisse
                   </button>
                 </div>
@@ -122,7 +127,7 @@ export default function CartPage() {
             </div>
           )}
         </div>
-      </div>
-    </>
+      </main>
+
   )
 }

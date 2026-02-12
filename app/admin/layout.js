@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import jwt from 'jsonwebtoken';
+import { jwtDecode } from 'jwt-decode';
 import NavBar from '../components/NavBar';
 import AdminSidebar from '../components/AdminSidebar';
 import { isAdmin } from '../../lib/utils/auth';
@@ -21,7 +21,7 @@ export default function AdminLayout({ children }) {
     }
 
     try {
-      const decoded = jwt.decode(token);
+      const decoded = jwtDecode(token);
       if (decoded && isAdmin(decoded.role)) {
         setIsAuthorized(true);
         setUser(decoded);

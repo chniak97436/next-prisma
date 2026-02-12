@@ -46,9 +46,9 @@ export default function NavBar({ user }) {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold hover:text-yellow-300 transition-all duration-300 transform hover:scale-110 animate-glow">
-              <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                MonApp
-              </span>
+              <div className=" rounded p-1">
+                <img src="/logo.png" alt="Logo" className="h-12 rounded-full -p-4 w-full bg-[#242124]" />
+              </div>
             </Link>
           </div>
 
