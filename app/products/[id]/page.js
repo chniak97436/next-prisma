@@ -68,24 +68,30 @@ export default function productId({ params }) {
     return (
         <>
             <main className='mt-0 w-full relative h-dvh flex items-center justify-center bg-[#292322]'>
-            <NavBar user={{ name: user?.name, role: user?.role }} />
+                <NavBar user={{ name: user?.name, role: user?.role }} />
                 <div className=' w-[90%] my-auto bg-[#F5CC60] '>
                     <div className='mt-20 w-full'>
                         <h1 className='text-center text-[#292322] text-4xl font-bold '>{product.name}</h1>
                     </div>
                     <div className=' w-[80%]  bg-[#F5CC60] mb-10  mx-auto'>
                         <div className='flex mx-auto mt-8 rounded-md   w-auto bg-transparent'>
-                            <Image src={product.image_url} alt={product.name} width={400} height={300} className='w-[50%] autofill bg-cover   mx-auto' />
+                            <Image src={product.image_url} alt={product.name} width={400} height={300} className='shadow-[#292322] shadow-md w-[50%] autofill bg-cover mx-auto' />
 
                         </div>
-                        <div className='flex text-[#292322] relative flex-col items-start p-4'>
+                        <div className='flex text-[#292322]  relative flex-col items-start p-4'>
                             {/* <h1>Catégorie : {product.category?.name || 'Aucune'}</h1> */}
                             <h1 className='px-4 py-4'>Description : {product.description}</h1>
-                            {product.stock_quantity > 0 ? <h1 className='px-4 py-4 text-green-800'>Stock : {product.stock_quantity}</h1> : <h1 className='px-4 py-4 text-red-800 font-extrabold'>Épuisé</h1>}
+                            {product.stock_quantity > 0 ? <h1 className='px-4 py-4 text-green-800'>Stock : {product.stock_quantity}</h1> : <h1 className='px-4 py-4 text-red-800 font-extrabold'>Épuisé :</h1>}
                             <h2 className='px-4 py-4 absolute bottom-0 right-0 font-bold text-[#292322] text-4xl'>Prix : {product.price} €</h2>
                             {/* Add more product fields as needed */}
                             <p className='px-4 py-4 text-xs italic'>Ref : {product.id}.</p>
-                            <button onClick={handleAddToCart} className="px-4 py-4 bg-[#292322] hover:bg-[#2b2827] text-white font-medium   rounded-lg transition-colors duration-200 flex items-center justify-center whitespace-nowrap">
+                            <button onClick={handleAddToCart}
+                                className={`
+                                            ${product.stock_quantity <= 0 ?
+                                        "disabled flex-1 bg-[#5c5c5c]  text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
+                                        :
+                                        "flex-1 bg-[#242124] hover:bg-[#3e3e3e] text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center whitespace-nowrap" }
+                                            `}>
                                 <svg className=" w-5 h-5 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13v8a2 2 0 002 2h10a2 2 0 002-2v-3" />
                                 </svg>

@@ -13,6 +13,7 @@ export default function products() {
     const { addToCart } = useCart();
     const [categoryName, setCategoryName] = useState(["All"]);
     const [selectedCategory, setSelectedCategory] = useState("All");
+
     //------------userName & userRole---------------
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -90,7 +91,7 @@ export default function products() {
             image_url: item.image_url,
         };
         console.log("J'envoie ceci au CartContext :", itemToAdd);
-        addToCart(itemToAdd);   
+        addToCart(itemToAdd);
     };
     // ----------filter----------------
     const handleFilter = (cat) => {
@@ -104,7 +105,7 @@ export default function products() {
                 <h1 className="text-3xl font-bold text-center text-[#F5CC60] mb-8">Tous nos produits</h1>
                 <div className="flex flex-wrap justify-center  mb-8">
                     {categoryName.map((cat, index) => (
-                        <button key={ index}
+                        <button key={index}
                             onClick={() => handleFilter(cat)}
                             className="bg-[#242124] hover:bg-[#36454F] border border-[#EFECE6]  font-medium py-2 px-4 mb-10 text-[#F5CC60] transition-colors duration-200">
                             {cat === "All" ? "Tous" : cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -120,12 +121,27 @@ export default function products() {
                             </div>
                             <div className="p-6 grid grid-rows-[auto_1fr_auto_auto] gap-4 h-full">
                                 <h2 className="text-xl font-semibold text[#242124]overflow-hidden">{prod.name}</h2>
-                                <p className="text-gray-600 text-sm overflow-hidden">{prod.description}</p>
+                                <p className="text-gray-600 text-sm overflow-hidden">{prod.description.slice(0, 50)}...</p>
                                 <div className="flex items-center justify-between">
                                     <span className="text-xl font-bold text-[#242124]">{prod.price} €</span>
                                 </div>
+                                <div className="flex items-center justify-between">
+                                    {prod.stock_quantity > 0 ? (
+                                        <span className="text-green-600 font-medium">En stock : {prod.stock_quantity}</span>
+                                    ) : (
+                                        <span className="text-red-600 font-medium">Rupture de stock</span>
+                                    )}
+                                    <span className="text-xl font-bold text-[#242124]">{prod.price} €</span>
+                                </div>
                                 <div className="flex space-x-2">
-                                    <button onClick={() => handleAddToCart(prod)} className="flex-1 bg-[#242124] hover:bg-[#3e3e3e] text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center whitespace-nowrap">
+                                    <button
+                                        onClick={() => handleAddToCart(prod)}
+                                        className={`
+                                            ${prod.stock_quantity <= 0 ?
+                                                "disabled flex-1 bg-[#5c5c5c]  text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
+                                                :
+                                                "flex-1 bg-[#242124] hover:bg-[#3e3e3e] text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 flex items-center justify-center whitespace-nowrap"}
+                                            `}>
                                         <svg className="w-5 h-5 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13v8a2 2 0 002 2h10a2 2 0 002-2v-3" />
                                         </svg>

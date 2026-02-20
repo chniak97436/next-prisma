@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import NavBar from './components/NavBar';
 import Image from 'next/image';
+import Link from 'next/link';
 
 
 export default function Home() {
@@ -32,7 +33,7 @@ export default function Home() {
           },
         });
         const data = await response.json();
-        const dt = data.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
+        const dt = data.data.sort((a, b) => new Date(b.created_at) > new Date(a.created_at)).slice(0,3);
         if (response.ok) {
           setProduct(dt);
 
@@ -64,9 +65,14 @@ export default function Home() {
       <div className='w-full flex justify-center mx-auto  p-10 bg-[#F5CC60] '>
         
         {product.map((prod) => (
-          <div key={prod.id} className='w-[80%] mt-10 mx-2 text-[#F5CC60] text-start font-bold shadow-2xl bg-[#242124]'>
-            
-            <Image src={prod.image_url} alt={prod.name} width={200} height={120} className='object-contain shadow-2xl py-2 px-4 w-90 h-50' />
+          <div key={prod.id} className='w-[80%] mt-4 px-2 mx-2 text-[#F5CC60] text-start font-bold shadow-2xl bg-[#242124]'>
+            <h1 className='text-center my-4 uppercase text-lg'>{prod.name}</h1>
+            <Image src={prod.image_url} alt={prod.name} width={200} height={120} className='object-contain mb-8 mx-auto w-90 h-50' />
+            <button className='mx-auto justify-center w-full'>
+              <Link href={`/products/${prod.id}`} className='bg-[#F5CC60] text-[#242124] font-bold py-2 px-4 rounded-md hover:bg-[#F5CC60]/80 transition-colors duration-300 block mx-auto mb-4'>
+                Voir le produit
+              </Link>
+            </button>
           </div>
         ))}
         </div>

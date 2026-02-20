@@ -38,8 +38,8 @@ export default function AdminLayout({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#292322]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F5CC60]"></div>
       </div>
     );
   }
@@ -49,7 +49,7 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#292322]">
       <NavBar user={user} />
       <div className="flex">
         <AdminSidebar />

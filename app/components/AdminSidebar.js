@@ -68,7 +68,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed left-0 top-16 h-full w-64 bg-white shadow-lg border-r border-gray-200 overflow-y-auto">
+    <div className="fixed left-0 top-16 h-full w-64 bg-[#292322] shadow-lg border-r border-[#F5CC60]/20 overflow-y-auto">
       <div className="p-4">
         <nav className="space-y-2">
           {menuItems.map((item) => {
@@ -81,8 +81,8 @@ export default function AdminSidebar() {
                   href={item.href}
                   className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
                     isActive
-                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-[#F5CC60]/20 text-[#F5CC60] border-r-2 border-[#F5CC60]'
+                      : 'text-[#F5CC60]/70 hover:bg-[#F5CC60]/10 hover:text-[#F5CC60]'
                   }`}
                 >
                   <Icon className="w-5 h-5 mr-3" />
@@ -96,8 +96,8 @@ export default function AdminSidebar() {
                         href={subItem.href}
                         className={`block px-4 py-2 text-sm rounded-md transition-colors duration-200 ${
                           pathname === subItem.href
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            ? 'bg-[#F5CC60]/30 text-[#F5CC60]'
+                            : 'text-[#F5CC60]/60 hover:bg-[#F5CC60]/10 hover:text-[#F5CC60]'
                         }`}
                       >
                         {subItem.title}

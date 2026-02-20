@@ -17,6 +17,7 @@ export default function AdminDashboard() {
     users: 0,
     products: 0,
     categories: 0,
+    commande : 0,
     orders: 0,
     reviews: 0,
     payments: 0
@@ -42,6 +43,11 @@ export default function AdminDashboard() {
         const categoriesData = await categoriesRes.json();
         const categoriesCount = categoriesData.data.length || 0;
 
+        // Fetch commandes count
+        const commandesRes = await fetch('/api/commande');
+        const commandesData = await commandesRes.json();
+        const commandesCount = commandesData.data.length || 0;
+
         // Fetch reviews count
         const reviewsRes = await fetch('/api/avis');
         const reviewsData = await reviewsRes.json();
@@ -51,6 +57,7 @@ export default function AdminDashboard() {
           users: usersCount,
           products: productsCount,
           categories: categoriesCount,
+          commande : commandesCount,
           orders: 0, // Placeholder
           reviews: reviewsCount,
           payments: 0 // Placeholder
@@ -71,28 +78,28 @@ export default function AdminDashboard() {
       value: stats.users,
       icon: Users,
       href: '/admin/users',
-      color: 'bg-blue-500'
+      color: 'bg-primary'
     },
     {
       title: 'Produits',
       value: stats.products,
       icon: Package,
       href: '/admin/products',
-      color: 'bg-green-500'
+      color: 'bg-secondary'
     },
     {
       title: 'Catégories',
       value: stats.categories,
       icon: Tag,
       href: '/admin/categories',
-      color: 'bg-purple-500'
+      color: 'bg-secondary'
     },
     {
       title: 'Commandes',
-      value: stats.orders,
+      value: stats.commande,
       icon: ShoppingCart,
       href: '/admin/commandes',
-      color: 'bg-orange-500'
+      color: 'bg-accent'
     },
     {
       title: 'Paiements',
@@ -106,14 +113,14 @@ export default function AdminDashboard() {
       value: stats.reviews,
       icon: MessageSquare,
       href: '/admin/avis',
-      color: 'bg-indigo-500'
+      color: 'bg-primary'
     }
   ];
   
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F5CC60]"></div>
       </div>
     );
   }
@@ -123,11 +130,11 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
-          <p className="text-gray-600 mt-1">Bienvenue dans votre panneau d'administration</p>
+          <h1 className="text-3xl font-bold text-[#F5CC60]">Tableau de bord</h1>
+          <p className="text-[#F5CC60]/70 mt-1">Bienvenue dans votre panneau d'administration</p>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center space-x-2 text-sm text-[#F5CC60]/70">
             <Activity className="w-4 h-4" />
             <span>Dernière mise à jour: {new Date().toLocaleDateString('fr-FR')}</span>
           </div>
@@ -142,29 +149,25 @@ export default function AdminDashboard() {
             <Link
               key={card.title}
               href={card.href}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200 group"
+              className="bg-[#F5CC60] rounded-xl shadow-sm border border-[#F5CC60]/20 p-6 hover:shadow-md transition-shadow duration-200 group"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{card.title}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{card.value}</p>
+                  <p className="text-sm font-medium text-[#292322]/70">{card.title}</p>
+                  <p className="text-3xl font-bold text-[#292322] mt-2">{card.value}</p>
                 </div>
-                <div className={`p-3 rounded-lg ${card.color} group-hover:scale-110 transition-transform duration-200`}>
-                  <Icon className="w-6 h-6 text-white" />
+                <div className={`p-3 rounded-lg bg-[#292322] group-hover:scale-110 transition-transform duration-200`}>
+                  <Icon className="w-6 h-6 text-[#F5CC60]" />
                 </div>
               </div>
-              <div className="mt-4 flex items-center text-sm">
-                <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-green-600 font-medium">+12%</span>
-                <span className="text-gray-500 ml-1">vs mois dernier</span>
-              </div>
+              
             </Link>
           );
         })}
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Actions rapides</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
@@ -196,10 +199,10 @@ export default function AdminDashboard() {
             <span className="text-sm font-medium text-gray-900">Voir commandes</span>
           </Link>
         </div>
-      </div>
+      </div> */}
 
       {/* Recent Activity Placeholder */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Activité récente</h2>
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
@@ -218,7 +221,7 @@ export default function AdminDashboard() {
             <span className="text-xs text-gray-400">il y a 6h</span>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

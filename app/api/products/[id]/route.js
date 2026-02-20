@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(request, { params }) {
     const { id } = await params;
-    console.log("id:", id);
     if (!id || isNaN(id)) {
         return badRequest('ID invalide');
     }

@@ -6,6 +6,7 @@ import Input from '../components/auth/Input';
 import Button from '../components/auth/Button';
 
 export default function RegisterPage() {
+  
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

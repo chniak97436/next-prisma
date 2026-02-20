@@ -1,8 +1,11 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react'
 import NavBar from '../components/NavBar'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { jwtDecode } from 'jwt-decode'
+import { useCart } from './../components/CartContext';
+import { User } from 'lucide-react'
+import { CommandeStatus } from '@prisma/client'
 
 export default function commande() {
     const [user, setUser] = useState()
@@ -16,7 +19,15 @@ export default function commande() {
     const [phone, setPhone] = useState('')
     const [succes, setSucces] = useState(false)
     const [message, setMessage] = useState('')
-   
+    const [err, setErr] = useState('')
+    const {
+        removeFromCart,
+        getTotalPrice,
+        getTotalItems,
+      } = useCart();
+    const router = useRouter()
+
+
     // Gestion du JWT (inchangé)
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -80,84 +91,192 @@ export default function commande() {
         if (response.ok) {
             setSucces(true)
             setMessage('Vos mise à jour ont été prises en compte.')
+        } else {
+
+            setErr('une erreur est survenue verifier vos données')
         }
-        console.log("succes : ",response)
+        console.log("succes : ", response)
+
+    }
+    //----------POST COMMANDE BDD-----------------
+    const valideCommande = async () => {
+        const priceTotal =parseFloat(getTotalPrice().toFixed(2)) 
+        const userid = user.id
+        const address = user.address
+        console.log("click commande")
         
+        try {
+            const res = await fetch('/api/commande/', {
+                method: "POST",
+                include : {
+                  user : User,
+                  status : CommandeStatus ,
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({  userid, address, priceTotal }),
+                
+                })
+                const data = await res.json()
+                console.log(data)
+                if(data){
+                    setMessage('Commande validée....')
+                    setTimeout(()=>{
+                      router.push(`./commande/recapCommand/`)  
+                    },2000)
+                }
+        } catch (err) {
+
+        }
     }
     return (
         <div className='min-h-screen bg-[#292322]  '>
             <NavBar user={{ name: user?.name || '' }} />
 
             <div className="pt-20 px-6   text-[#F5CC60]">
-                <h1 className="text-2xl text-center font-bold text-[#F5CC60] mb-8">Informations personelles</h1>
-                <div className='flex flex-row w-[50%] mx-auto'>
+                <h1 className="text-3xl text-center font-bold text-[#F5CC60] mb-10">Informations personnelles</h1>
+                <div className='max-w-2xl mx-auto'>
                     {user ? (
-                        <form onSubmit={updateUser} className="min-w-full rounded-md shadow-2xl border-x bg-[#F5CC60] text-[#292322] mb-10  py-4">
-                            {succes && (
-                                <div className='text-center py-2 mx-auto my-5 px-4 text-green-300 bg-green-700 w-90 rounded-md  '>{message}</div>
-                            )}
-                            <div className='mb-6 '>
-                                <label className="px-6 py-4 whitespace-nowrap text-sm font-medium ">Nom d'utilisateur :</label>
-                                {user.username ? (
-                                    <label className="px-6 py-2 whitespace-nowrap font-medium text-sm ">{user.username}</label>
-                                ) : (
-                                    <input type="text" onChange={(e) => setUsername(e.target.value)} value={username} className="outline focus px-2 rounded-md bg-[#292322] text-[#f5cc60]" />
-                                )}
-                            </div>
-
-                            <div className='mb-6'>
-                                <label className="px-6 py-4 whitespace-nowrap text-sm font-medium ">Email :</label>
-                                {user.email ? (
-                                    <label className="px-6 py-4 whitespace-nowrap font-medium text-sm ">{user.email}</label>) : (
-                                    <input type="email" onChange={(e) => setEmail(e.target.value)} value={email} className="outline focus px-2 rounded-md bg-[#292322] text-[#f5cc60]" />
-                                )}
-                            </div>
-
-                            <div className='mb-6'>
-                                <label className="px-6 py-4 whitespace-nowrap text-sm font-medium ">Prénom :</label>
-                                {user.first_name ? (
-                                    <label className="px-6 py-4 whitespace-nowrap font-medium text-sm ">{user.first_name}</label>) : (
-                                    <input type="text" onChange={(e) => setFirst_name(e.target.value)} value={first_name} className="outline focus px-2 rounded-md bg-[#292322] text-[#f5cc60]" />
-                                )}
-                            </div>
-
-                            <div className='mb-6'>
-                                <label className="px-6 py-4 whitespace-nowrap text-sm font-medium ">Nom :</label>
-                                {user.last_name ? (
-                                    <label className="px-6 py-4 whitespace-nowrap text-sm font-medium ">{user.last_name}</label>) :
-                                    (<input onChange={(e) => setLast_name(e.target.value)} className="outline focus px-2 rounded-md bg-[#292322] text-[#f5cc60]" value={last_name} />)}
-                            </div>
-
-                            <div className='mb-6'>
-                                <label className="px-6 py-4 whitespace-nowrap text-sm font-medium ">Adresse :</label>
-                                {user.address ?
-                                    (<label className="px-6 py-4 whitespace-nowrap font-medium text-sm ">{user.address || 'N/A'}</label>) : (
-                                        <input onChange={(e) => setAdress(e.target.value)} className="outline focus px-2 rounded-md bg-[#292322] text-[#f5cc60]" value={address} />
-                                    )}
-                            </div>
-
-                            <div className='mb-8'>
-                                <label className="px-6 py-4 whitespace-nowrap text-sm font-medium ">Téléphone :</label>
-                                {user.phone ?
-                                    (<label className="px-6 py-4 whitespace-nowrap font-medium text-sm ">{user.phone}</label>) : (
-                                        <input type="number" onChange={(e) => setPhone(e.target.value)} className="outline focus px-2 rounded-md bg-[#292322] text-[#f5cc60]" value={phone} />
-                                    )}
-                            </div>
-                            {!succes ?(
-                                <div className='flex w-full justify-end px-6 '>
-                                    <button className='rounded-md px-6 bg-[#292322] text-[#f5cc60]  py-1  font-bold'>Mettre a jour.</button>
-                                </div>
-                            ) : (
-                                <div className='flex w-full justify-end px-6'>
-                                    <Link className='px-4 py-2 rounded bg-[#292322] text-[#f5cc60] font-bold' href="/#">aller</Link>
-                                </div>
-                            )}
+                        <form onSubmit={updateUser} className="bg-[#F5CC60] text-[#292322] rounded-lg shadow-2xl border border-[#F5CC60] p-8 space-y-6">
                             
+
+                            {/* Nom d'utilisateur */}
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-center'>
+                                <label className="flex items-center text-sm font-medium">
+                                    Nom d'utilisateur :
+                                </label>
+                                {user.username ? (
+                                    <span className="md:col-span-2 font-medium text-sm bg-[#292322] text-[#F5CC60] px-3 py-2 rounded-md">{user.username}</span>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        value={username}
+                                        className="md:col-span-2 outline-none focus:ring-2 focus:ring-[#292322] px-3 py-2 rounded-md bg-[#292322] text-[#F5CC60] transition-all duration-200"
+                                        placeholder="Entrez votre nom d'utilisateur"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Email */}
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-center'>
+                                <label className="flex items-center text-sm font-medium">
+                                    Email :
+                                </label>
+                                {user.email ? (
+                                    <span className="md:col-span-2 font-medium text-sm bg-[#292322] text-[#F5CC60] px-3 py-2 rounded-md">{user.email}</span>
+                                ) : (
+                                    <input
+                                        type="email"
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        value={email}
+                                        className="md:col-span-2 outline-none focus:ring-2 focus:ring-[#292322] px-3 py-2 rounded-md bg-[#292322] text-[#F5CC60] transition-all duration-200"
+                                        placeholder="Entrez votre email"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Prénom */}
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-center'>
+                                <label className="flex items-center text-sm font-medium">
+                                    Prénom :
+                                </label>
+                                {user.first_name ? (
+                                    <span className="md:col-span-2 font-medium text-sm bg-[#292322] text-[#F5CC60] px-3 py-2 rounded-md">{user.first_name}</span>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        onChange={(e) => setFirst_name(e.target.value)}
+                                        value={first_name}
+                                        className="md:col-span-2 outline-none focus:ring-2 focus:ring-[#292322] px-3 py-2 rounded-md bg-[#292322] text-[#F5CC60] transition-all duration-200"
+                                        placeholder="Entrez votre prénom"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Nom */}
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-center'>
+                                <label className="flex items-center text-sm font-medium">
+                                    Nom :
+                                </label>
+                                {user.last_name ? (
+                                    <span className="md:col-span-2 font-medium text-sm bg-[#292322] text-[#F5CC60] px-3 py-2 rounded-md">{user.last_name}</span>
+                                ) : (
+                                    <input
+                                        onChange={(e) => setLast_name(e.target.value)}
+                                        value={last_name}
+                                        className="md:col-span-2 outline-none focus:ring-2 focus:ring-[#292322] px-3 py-2 rounded-md bg-[#292322] text-[#F5CC60] transition-all duration-200"
+                                        placeholder="Entrez votre nom"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Adresse */}
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-center'>
+                                <label className="flex items-center text-sm font-medium">
+                                    Adresse :
+                                </label>
+                                {user.address ? (
+                                    <span className="md:col-span-2 font-medium text-sm bg-[#292322] text-[#F5CC60] px-3 py-2 rounded-md">{user.address || 'N/A'}</span>
+                                ) : (
+                                    <input
+                                        onChange={(e) => setAdress(e.target.value)}
+                                        value={address}
+                                        className="md:col-span-2 outline-none focus:ring-2 focus:ring-[#292322] px-3 py-2 rounded-md bg-[#292322] text-[#F5CC60] transition-all duration-200"
+                                        placeholder="Entrez votre adresse"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Téléphone */}
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-center'>
+                                <label className="flex items-center text-sm font-medium">
+                                    Téléphone :
+                                </label>
+                                {user.phone ? (
+                                    <span className="md:col-span-2 font-medium text-sm bg-[#292322] text-[#F5CC60] px-3 py-2 rounded-md">{user.phone}</span>
+                                ) : (
+                                    <input
+                                        type="tel"
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        value={phone}
+                                        className="md:col-span-2 outline-none focus:ring-2 focus:ring-[#292322] px-3 py-2 rounded-md bg-[#292322] text-[#F5CC60] transition-all duration-200"
+                                        placeholder="Entrez votre téléphone"
+                                    />
+                                )}
+                                
+                            </div>
+                            {succes && (
+                                <div className='flex flex-cols-1 md:flex-cols-3 items-center justify-center py-3 px-4 bg-green-700 text-green-300 rounded-md animate-fade-in'>
+                                    {message}
+                                </div>
+                            )}
+                            {/* Boutons */}
+                            <div className='flex justify-end space-x-4 pt-4'>
+                                {!succes ? (
+                                    <button
+                                        type="submit"
+                                        className='px-6 py-2 bg-[#292322] text-[#F5CC60] font-bold rounded-md hover:bg-opacity-80 transition-all duration-200 focus:ring-2 focus:ring-[#F5CC60]'
+                                    >
+                                        Mettre à jour
+                                    </button>
+                                ) : (
+                                    <button
+                                        className='px-6 py-2 bg-[#292322] text-[#F5CC60] font-bold rounded-md hover:bg-opacity-80 transition-all duration-200 focus:ring-2 focus:ring-[#F5CC60] inline-block text-center'
+                                        type='button'
+                                        onClick={valideCommande}
+                                    >
+                                        Valider ma commande.
+                                    </button>
+                                )}
+                            </div>
+
                         </form>
 
                     ) : (
                         <div className="text-center py-12">
-                            <p className="text-white">Aucun utilisateur connecté.</p>
+                            <p className="text-[#F5CC60]">Aucun utilisateur connecté.</p>
                         </div>
                     )}
 
