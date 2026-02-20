@@ -46,7 +46,7 @@ export default function AdminDashboard() {
         // Fetch commandes count
         const commandesRes = await fetch('/api/commande');
         const commandesData = await commandesRes.json();
-        const commandesCount = commandesData.data.length || 0;
+        const commandesCount = commandesData?.data?.length || 0;
 
         // Fetch reviews count
         const reviewsRes = await fetch('/api/avis');

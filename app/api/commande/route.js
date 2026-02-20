@@ -1,31 +1,36 @@
-import commande from '@/app/commande/page';
 import { prisma } from '@/lib/prisma';
-import { success, badRequest, conflict, internalServerError } from '@/lib/utils/response';
+import { success, badRequest, internalServerError } from '@/lib/utils/response';
 
 export async function GET(req) {
-    if (commande) {
-        
-        const commande = await prisma.commande.findMany()
-        return success({
-            data: commande
-        });
-    }
     try {
         const { searchParams } = new URL(req.url);
         const userId = searchParams.get('userId');
 
-        if (!userId) {
-            return badRequest('userId is required');
-        }
+        let commandes;
 
-        const commandes = await prisma.commande.findMany({
-            where: {
-                user_id: parseInt(userId)
-            },
-            orderBy: {
-                created_at: 'desc'
-            }
-        });
+        if (!userId) {
+            // Return all commandes for admin dashboard
+            console.log('=== GET /api/commande (all orders) ===');
+            commandes = await prisma.commande.findMany({
+                orderBy: {
+                    created_at: 'desc'
+                }
+            });
+            console.log('Total commandes:', commandes.length);
+        } else {
+            // Return commandes for specific user
+            console.log('=== GET /api/commande ===');
+            console.log('userId demandé:', userId);
+            commandes = await prisma.commande.findMany({
+                where: {
+                    user_id: parseInt(userId)
+                },
+                orderBy: {
+                    created_at: 'desc'
+                }
+            });
+            console.log('Commandes trouvées pour user', userId, ':', commandes.length);
+        }
 
         return success({
             data: commandes
@@ -53,7 +58,8 @@ export async function POST(req) {
         console.log("body : ", newCommande)
         return success({
             success: true,
-            message: 'commande valide.'
+            message: 'commande valide.',
+            data: { id: newCommande.id }
         }, 201);
     } catch (err) {
         console.error('Erreur commande', err);

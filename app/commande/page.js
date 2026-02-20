@@ -4,8 +4,6 @@ import NavBar from '../components/NavBar'
 import { useRouter } from 'next/navigation'
 import { jwtDecode } from 'jwt-decode'
 import { useCart } from './../components/CartContext';
-import { User } from 'lucide-react'
-import { CommandeStatus } from '@prisma/client'
 
 export default function commande() {
     const [user, setUser] = useState()
@@ -100,34 +98,74 @@ export default function commande() {
     }
     //----------POST COMMANDE BDD-----------------
     const valideCommande = async () => {
-        const priceTotal =parseFloat(getTotalPrice().toFixed(2)) 
+        const priceTotal = parseFloat(getTotalPrice().toFixed(2)) 
         const userid = user.id
         const address = user.address
         console.log("click commande")
         
+        // Récupérer les produits du panier
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        console.log("Cart:", cart);
+        
         try {
+            // 1. Créer la commande
             const res = await fetch('/api/commande/', {
                 method: "POST",
-                include : {
-                  user : User,
-                  status : CommandeStatus ,
-                },
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({  userid, address, priceTotal }),
+                body: JSON.stringify({ userid, address, priceTotal }),
+            })
+            
+            const data = await res.json()
+            console.log("Commande créée:", data)
+            
+            if (data && data.data && cart.length > 0) {
+                // 2. Ajouter les produits à la commande
+                const commandeId = data.data.id;
                 
-                })
-                const data = await res.json()
-                console.log(data)
-                if(data){
-                    setMessage('Commande validée....')
-                    setTimeout(()=>{
-                      router.push(`./commande/recapCommand/`)  
-                    },2000)
-                }
+                // Préparer les données - attention c'est "quantite" pas "quantity"
+                const productId = cart.map(item => item.id);
+                const productQuantite = cart.map(item => item.quantite);
+                const priceUnique = cart.map(item => item.price);
+                
+                console.log("Ajout des produits - commandeId:", commandeId);
+                console.log("productId:", productId);
+                console.log("productQuantite:", productQuantite);
+                console.log("priceUnique:", priceUnique);
+                
+                // Appeler l'API pour ajouter les produits
+                const itemsRes = await fetch('/api/commandeItems/', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        comandeId: commandeId,
+                        productId: productId,
+                        productQuantite: productQuantite,
+                        priceUnique: priceUnique,
+                        totalAmount: priceTotal
+                    })
+                });
+                
+                const itemsData = await itemsRes.json();
+                console.log("Produits ajoutés:", itemsRes.status, itemsData);
+            }
+            
+            // Vider le panier après la commande
+            localStorage.removeItem('cart');
+                
+            setMessage('Commande validée....')
+            
+            // Rediriger vers la page de recap
+            router.push(`./commande/recapCommand/`)  
+            
         } catch (err) {
-
+            console.error("Erreur:", err);
+            // En cas d'erreur, on redirige quand même
+            localStorage.removeItem('cart');
+            router.push(`./commande/recapCommand/`)  
         }
     }
     return (
