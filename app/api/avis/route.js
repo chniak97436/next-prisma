@@ -6,13 +6,20 @@ export async function GET(request) {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId');
         const productId = searchParams.get('productId');
-
+        const userName = searchParams.get('userName');
         const where = {};
         
         if (userId) {
             where.user_id = parseInt(userId);
         }
-        
+        if (userName) {
+            where.user = {
+                name: {
+                    contains: userName,
+                    mode: 'insensitive',
+                },
+            };
+        }
         if (productId) {
             where.product_id = parseInt(productId);
         }
@@ -25,6 +32,7 @@ export async function GET(request) {
             include: {
                 user: true,
                 product: true,
+                
             },
         });
         

@@ -48,7 +48,12 @@ export default function AdminDashboard() {
         const commandesData = await commandesRes.json();
         const commandesCount = commandesData?.data?.length || 0;
 
-        // Fetch reviews count
+        // Fetch paiment count
+        const paymentRes = await fetch('/api/payment');
+        const paymentData = await paymentRes.json();
+        const paymentsCount = paymentData?.data?.length || 0;
+
+        // Fetch avis count
         const reviewsRes = await fetch('/api/avis');
         const reviewsData = await reviewsRes.json();
         const reviewsCount = reviewsData.data.length || 0;
@@ -60,7 +65,7 @@ export default function AdminDashboard() {
           commande : commandesCount,
           orders: 0, // Placeholder
           reviews: reviewsCount,
-          payments: 0 // Placeholder
+          payments: paymentsCount
         });
       } catch (error) {
         console.error('Error fetching stats:', error);
