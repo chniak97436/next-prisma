@@ -4,6 +4,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import AuthForm from '../components/auth/AuthForm';
 import Input from '../components/auth/Input';
 import Button from '../components/auth/Button';
+import Link from 'next/link';
+
+
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -90,6 +93,7 @@ function LoginPage() {
         <Button>
             Se connecter
         </Button>
+        <Link href="/forgot-password" className="text-sm font-bold text-blue-600 hover:underline">Mot de passe oublier ?</Link>
     </AuthForm>
   );
 }

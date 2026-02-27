@@ -55,6 +55,7 @@ export default function ProductsPage() {
 
   const update = (productId) => {
     // Placeholder for update functionality
+
     console.log('Update product:', productId);
   };
 
@@ -128,13 +129,15 @@ export default function ProductsPage() {
               <div className="flex flex-col sm:flex-row gap-2 mt-4">
                 <Button
                   as={Link}
-                  href={`/admin/products/update/${product.id}`}
+                  href={`/admin/products/${product.id}`}
                   className="flex-1 inline-flex items-center justify-center p-3 bg-[#292322]/20 text-[#292322] font-medium rounded-lg hover:bg-[#292322]/30 transition-all duration-200 shadow-sm hover:shadow-md"
                   title="Voir"
                 >
                   <Eye className="w-5 h-5" />
                 </Button>
                 <Button
+                  as={Link}
+                  href={`/admin/products/update/${product.id}`}
                   onClick={() => update(product.id)}
                   className="flex-1 inline-flex items-center justify-center p-3 bg-[#292322] text-[#F5CC60] font-medium rounded-lg hover:bg-[#292322]/90 transition-all duration-200 shadow-sm hover:shadow-md"
                   title="Modifier"

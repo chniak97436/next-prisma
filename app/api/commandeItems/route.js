@@ -97,17 +97,23 @@ export async function POST(request) {
      
     console.log('Items créés avec succès');
 
-    // Créer l'enregistrement de paiement
+    // Créer l'enregistrement de paiement (avec upsert pour éviter l'erreur d'unicité)
     try {
-      const payment = await prisma.payment.create({
-        data: {
+      const payment = await prisma.payment.upsert({
+        where: { commande_id: parseInt(comandeId) },
+        update: {
+          payment_method: 'credit_card',
+          amount: parseFloat(totalAmount),
+          status: 'completé',
+        },
+        create: {
           commande_id: parseInt(comandeId),
           payment_method: 'credit_card',
           amount: parseFloat(totalAmount),
           status: 'completé',
         },
       });
-      console.log('Payment créé:', payment);
+      console.log('Payment créé/mis à jour:', payment);
     } catch (payErr) {
       console.error('Erreur création payment:', payErr);
     }

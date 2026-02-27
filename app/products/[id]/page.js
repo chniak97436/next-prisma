@@ -137,7 +137,7 @@ export default function productId({ params }) {
 
                         <div className='flex text-[#292322]  relative flex-col items-start p-4'>
                             {/* <h1>Catégorie : {product.category?.name || 'Aucune'}</h1> */}
-                            <h1 className='px-4 py-4'>Description : {product.description}</h1>
+                            <p className='px-4 py-4'>Description : {product.description}</p>
                             {product.stock_quantity > 0 ? <h1 className='px-4 py-4 text-green-800'>Stock : {product.stock_quantity}</h1> : <h1 className='px-4 py-4 text-red-800 font-extrabold'>Épuisé :</h1>}
                             <h2 className='px-4 py-4 absolute bottom-0 right-0 font-bold text-[#292322] text-4xl'>Prix : {product.price} €</h2>
                             {/* Add more product fields as needed */}

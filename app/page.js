@@ -13,7 +13,7 @@ export default function Home() {
   const [commandeProducts, setCommandeProducts] = useState([])
   const [avisForm, setAvisForm] = useState({})
   const [avisSubmitting, setAvisSubmitting] = useState({})
-  
+  const [avisDone, setAvisDone] = useState(false)
   useEffect(() => {
     const token = localStorage.getItem('token');
     let userId = null;
@@ -203,6 +203,7 @@ export default function Home() {
         },
       });
       const data = await response.json();
+      setAvisDone(true)
       return response.ok && data.data && data.data.length > 0;
     } catch (error) {
       console.error('Error checking existing avis:', error);
@@ -260,33 +261,35 @@ export default function Home() {
           </div>
         ))}
       </div>
+       {/* Section de la dernière commande  */}
       <h1 className='text-2xl flex flex-row text-[#F5CC60] underline py-4 text-start px-4'>Votre derniere commande.</h1>
       <div className='w-full flex justify-center mx-auto  p-10 bg-[#F5CC60] '>
+        
         {lastCommande ? (
           <div className='w-[80%] mt-4 px-2 mx-2 text-[#242124] text-start font-bold shadow-2xl bg-white p-4'>
+            <h1 className='text-2xl'>Votre derniere commande :</h1>
             <p className='text-lg'><strong>Commande #{lastCommande.id}</strong></p>
             <p>Montant total: {lastCommande.total_amount} €</p>
             <p>Statut: {lastCommande.status}</p>
             <p>Adresse de livraison: {lastCommande.shipping_address || 'Non spécifiée'}</p>
             <p>Date: {new Date(lastCommande.created_at).toLocaleDateString('fr-FR')}</p>
-            <Link href={`/commande/recapCommand?id=${lastCommande.id}`} className='bg-[#242124] text-[#F5CC60] font-bold py-2 px-4 rounded-md hover:bg-[#242124]/80 transition-colors duration-300 block mt-4 w-fit'>
-              Voir les détails
-            </Link>
             
+           
+       
             {/* Section produits de la commande avec formulaire d'avis */}
             {commandeProducts.length > 0 && (
               <div className='mt-6'>
-                <h3 className='text-lg font-bold mb-4 border-b pb-2'>Produits commandés - Donnez votre avis</h3>
+                <h3 className='text-lg font-bold mb-4  pb-2'>Produits commandés - Donnez votre avis</h3>
                 {commandeProducts.map((item) => (
                   <div key={item.id} className='border p-4 mb-4 rounded-lg bg-gray-50'>
                     <div className='flex items-center gap-4'>
                       {item.product?.image_url && (
                         <Image 
-                          src={item.product.image_url} 
-                          alt={item.product.name} 
-                          width={60} 
-                          height={60} 
-                          className='object-contain'
+                        src={item.product.image_url} 
+                        alt={item.product.name} 
+                        width={60} 
+                        height={60} 
+                        className='object-contain'
                         />
                       )}
                       <div className='flex-1'>

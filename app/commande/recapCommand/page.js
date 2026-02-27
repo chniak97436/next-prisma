@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode'
 import { useCart } from '@/app/components/CartContext'
 import { useRouter } from 'next/navigation'
 
+
 export default function RecapCommande() {
     const [user, setUser] = useState()
     const [loading, setLoading] = useState(true)
@@ -13,7 +14,7 @@ export default function RecapCommande() {
     const [errorMessage, setErrorMessage] = useState('')
     const [message, setMessage] = useState('')
     const router = useRouter()
-
+    const numCommande = Math.floor(Math.random() * 1000000) + 1; // Génère un numéro de commande aléatoire
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -23,6 +24,7 @@ export default function RecapCommande() {
                     id: decoded.userId || decoded.id,
                     name: decoded.name || decoded.username || '',
                     role: decoded.role || '',
+                    email: decoded.email || '',
                 });
             } catch (error) {
                 console.error('Error decoding token:', error);
@@ -59,12 +61,9 @@ export default function RecapCommande() {
         clearCart
     } = useCart()
     console.log("recap-cart : ", cart.map((item) => {
-         
+
         return item;
     }))
-
-
-
 
     //----------------POST COMMANDE----------------
 
@@ -72,7 +71,7 @@ export default function RecapCommande() {
         e.preventDefault();
 
         try {
-            const comandeId = commande.id
+            const comandeId = commande.id.length > 0 ? commande.id[0] : commande.id; // Handle both array and single value
             const productId = cart.map((item) => item.id)
             const productQuantite = cart.map((item) => item.quantite)
             const priceUnique = cart.map((item) => item.price)
@@ -94,7 +93,33 @@ export default function RecapCommande() {
                 console.log('Commande items créés avec succès:', data);
                 setPaymentStatus('success');
                 clearCart()
+                setMessage('Votre paiement a été effectué avec succès ! Merci pour votre commande.');
                 
+                // Envoyer un email de confirmation (sans bloquer le processus)
+                try {
+                    const emailRes = await fetch('/api/send-payment-email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: user.email,
+                            subject: 'Confirmation de votre commande ref : ' + numCommande,
+                            text: `Bonjour ${user.name},\n\n Identifiant commande : ${comandeId}\n\n Merci pour votre commande !\n\n Votre paiement de ${totalAmount} € a été reçu avec succès. \n\nVotre commande est en cours de traitement.\n\nCordialement,\nL'équipe de votre boutique`
+                        }),
+                    });
+                    if (!emailRes.ok) {
+                        console.warn('Email de confirmation non envoyé (service SMTP non configuré)');
+                    }
+                } catch (emailErr) {
+                    console.warn('Erreur lors de l\'envoi de l\'email:', emailErr);
+                }
+                
+                setTimeout(() => {
+                    router.push('/');
+                }, 3000);
+
+
             } else {
                 console.error('Erreur lors de la création des items de commande:', data);
                 setErrorMessage(data.error || 'Une erreur est survenue lors de la création des items de commande.');
@@ -106,9 +131,43 @@ export default function RecapCommande() {
             setPaymentStatus('error');
             return;
         }
-        
-        console.log("Paiement soumis pour la commande:", commande.id);
 
+        console.log("Paiement soumis pour la commande:", commande.length > 0 ? commande[0].id : commande.id);
+
+    }
+    //----------------UPDATE STOCK----------------
+    const updateStock = async (productId, quantite) => {
+        if (!productId) return;
+        try {
+            // First get the current product to know the current stock
+            const getRes = await fetch(`/api/products/${productId}`);
+            if (!getRes.ok) {
+                console.error('Erreur lors de la récupération du produit:', getRes.status);
+                return;
+            }
+            const productData = await getRes.json();
+            const currentStock = productData.data.stock_quantity || 0;
+            
+            // Calculate new stock (current - ordered quantity)
+            const newStock = currentStock - quantite;
+            
+            // Update with the new stock value
+            const res = await fetch(`/api/products/${productId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ stock_quantity: newStock }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log('Stock mis à jour avec succès:', data);
+            } else {
+                console.error('Erreur lors de la mise à jour du stock:', data);
+            }
+        } catch (err) {
+            console.error('Error updating stock:', err);
+        }
     }
 
     if (loading) return <div className="min-h-screen bg-[#292322] flex items-center justify-center"><div className="text-[#F5CC60] text-xl">Chargement...</div></div>
@@ -125,7 +184,7 @@ export default function RecapCommande() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <p className="text-sm font-medium text-[#292322]/70">REF Commande</p>
-                                    <p className="font-bold text-lg">#{commande.id}</p>
+                                    <p className="font-bold text-lg">#{numCommande}</p>
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-sm font-medium text-[#292322]/70">Date</p>
@@ -157,7 +216,11 @@ export default function RecapCommande() {
                             </div>
                         </div>
 
-                        <div></div>
+                        {message ? (<div className="h-[20%] border-[#F5CC60]/70 bg-[#292322] flex items-center justify-center">
+                            <div className="text-green-400 text-center text-xl">
+                                {message}
+                                </div>
+                        </div>) : null}
 
                         {/* Card pour les articles */}
                         <div className='bg-[#F5CC60] text-[#292322] rounded-lg shadow-2xl p-8'>
@@ -194,6 +257,7 @@ export default function RecapCommande() {
                         {/* Bouton Payer */}
                         <div className="mt-6 flex justify-center">
                             <button
+                                onClick={() => cart.forEach(item => updateStock(item.id, item.quantite))}
                                 type="submit"
                                 className='w-full mb-20 md:w-auto px-12 py-4 bg-[#F5CC60] text-[#292322] font-bold text-lg rounded-lg shadow-lg hover:bg-[#F5CC60]/90 hover:scale-105 transition-all duration-200 focus:ring-4 focus:ring-[#F5CC60]/50'
                             >
@@ -209,7 +273,7 @@ export default function RecapCommande() {
                         </a>
                     </div>
                 )}
-                
+
             </div>
         </div>
     )

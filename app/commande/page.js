@@ -285,11 +285,6 @@ export default function commande() {
                                 )}
                                 
                             </div>
-                            {succes && (
-                                <div className='flex flex-cols-1 md:flex-cols-3 items-center justify-center py-3 px-4 bg-green-700 text-green-300 rounded-md animate-fade-in'>
-                                    {message}
-                                </div>
-                            )}
                             {/* Boutons */}
                             <div className='flex justify-end space-x-4 pt-4'>
                                 {!succes ? (
@@ -309,6 +304,12 @@ export default function commande() {
                                     </button>
                                 )}
                             </div>
+                            {succes && (
+                                <div className='flex flex-cols-1 md:flex-cols-3 items-center justify-center py-3 px-4 bg-green-700 text-green-300 rounded-md animate-fade-in'>
+                                    {message}
+                                </div>
+                            )}
+                            
 
                         </form>
 

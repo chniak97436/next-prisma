@@ -4,19 +4,61 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAdmin, isCustomer } from '../../lib/utils/auth';
 import { useCart } from './CartContext';
+import { jwtDecode } from 'jwt-decode';
 
-export default function NavBar({ user }) {
+export default function NavBar({ user: propUser }) {
   const router = useRouter();
-  const admin = isAdmin(user?.role);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [stats, setStats] = useState({
     categories: []
   });
-  const { getTotalItems } = useCart();
+  const [user, setUser] = useState(null);
+  const { getTotalItems, clearCart } = useCart();
 
-  const GoToCart = () =>{
+  // Check localStorage for user on mount and when propUser changes
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser({
+          id: decoded.id || decoded.userId || decoded.sub,
+          name: decoded.name?.name || decoded.name || '',
+          role: decoded.name?.role || decoded.role || '',
+        });
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+  }, [propUser]);
+
+  const GoToCart = () => {
     router.push("/cart")
   }
+
+  const handleLogout = async () => {
+    try {
+      // Call logout API
+      await fetch('/api/auth/logout', { method: 'GET' });
+      
+      // Clear localStorage (cart and any other client-side data)
+      localStorage.clear();
+      
+      // Clear user state
+      setUser(null);
+      // Clear cart context
+      clearCart();
+      // Redirect to login
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
+
   useEffect(() => {
     const fetchAllData = async () => {
       try {
@@ -38,7 +80,7 @@ export default function NavBar({ user }) {
     fetchAllData();
   }, []);
 
-
+  const admin = isAdmin(user?.role);
 
   return (
     <nav className="glass-strong text-white shadow-2xl animate-slide-in-left fixed top-0 left-0 right-0 z-50 backdrop-blur-md">
@@ -60,7 +102,7 @@ export default function NavBar({ user }) {
             <Link href="/products" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
               Tous les produits
             </Link>
-            {(!user || isCustomer(user?.role)) && (
+            {/* {(!user || isCustomer(user?.role)) && (
               <select
                 onChange={(e) => {
                   if (e.target.value) {
@@ -73,12 +115,12 @@ export default function NavBar({ user }) {
                 <option className="text-black bg-transparent " value="" disabled>Choisir une catégorie</option>
 
                 {stats.categories.map((category) => (
-                  <option key={category.id} value={category.id} className='text-black border-none bg-transparent'>
+                  <option key={category.id} value={category.name} className='text-black border-none bg-transparent'>
                     {category.name}
                   </option>
                 ))}
               </select>
-            )}
+            )} */}
             {!user ? (
               <>
                 <Link href="/login" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
@@ -93,17 +135,26 @@ export default function NavBar({ user }) {
                 <span className="text-sm animate-pulse-custom bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent font-semibold">
                   Bienvenue, {user?.name || 'Utilisateur'}
                 </span>
-                {admin && (
-                  <Link href="/admin" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
-                    Admin
-                  </Link>
+                {admin ? (
+                  <div>
+                    <Link href="/admin" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
+                      Admin
+                    </Link>
+                    <button onClick={handleLogout} className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
+                      Deconnexion
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={handleLogout} className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
+                    Deconnexion
+                  </button>
                 )}
                 {getTotalItems() > 0 && (
                   <div className="relative">
                     <button onClick={GoToCart}>
-                    <svg className="h-6 w-6 text-white hover:text-yellow-300 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13v8a2 2 0 002 2h10a2 2 0 002-2v-3" />
-                    </svg>
+                      <svg className="h-6 w-6 text-white hover:text-yellow-300 transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13v8a2 2 0 002 2h10a2 2 0 002-2v-3" />
+                      </svg>
                     </button>
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {getTotalItems()}
@@ -178,6 +229,9 @@ export default function NavBar({ user }) {
                       Admin
                     </Link>
                   )}
+                  <button onClick={handleLogout} className="block w-full text-left hover:text-yellow-300 px-3 py-2 rounded-md text-base font-medium transition-all duration-300">
+                    Deconnexion
+                  </button>
                   {getTotalItems() > 0 && (
                     <div className="flex items-center px-3 py-2">
                       <svg className="h-6 w-6 text-gray-500 hover:text-black transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">

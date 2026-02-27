@@ -1,17 +1,15 @@
-# TODO - Mise à jour des couleurs admin
+# Fix Plan: Module not found - Can't resolve 'child_process'
 
-## Couleurs à utiliser
-- Background: #292322 (marron foncé)
-- Primary accent: #F5CC60 (or/doré)
+## Issue
+nodemailer is being used in a client component, but it requires `child_process` which is a Node.js-only module not available in the browser.
 
-## Fichiers modifiés
-- [x] app/components/AdminSidebar.js
-- [x] app/admin/layout.js
-- [x] app/admin/page.js
-- [x] app/admin/products/page.js
-- [x] app/admin/commandes/page.js
-- [x] app/admin/categories/page.js
-- [x] app/admin/users/page.js
-- [x] app/admin/avis/page.js
+## Solution
+1. [x] Create API route `/api/send-payment-email/route.js` for server-side email sending
+2. [x] Update `app/commande/recapCommand/page.js` to call the API route instead of directly importing sendEmail
 
-## Statut: ✅ Terminé
+## Files created/edited
+- Created: `app/api/send-payment-email/route.js`
+- Edited: `app/commande/recapCommand/page.js`
+
+## Build Status
+✅ Build completed successfully - No more "Module not found: Can't resolve 'child_process'" error

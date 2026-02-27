@@ -43,16 +43,16 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-    
+
     try {
         const body = await req.json()
         const { userid, address, priceTotal } = body
 
         const newCommande = await prisma.commande.create({
             data: {
-                user_id :userid,
-                shipping_address :address,
-                total_amount :priceTotal
+                user_id: userid,
+                shipping_address: address,
+                total_amount: priceTotal
             }
         })
         console.log("body : ", newCommande)

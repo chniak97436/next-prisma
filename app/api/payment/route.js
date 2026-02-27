@@ -9,4 +9,4 @@ export async function GET(request) {
         console.error('Erreur lors de la récupération des paiements:', error);
         return internalServerError('Une erreur est survenue lors de la récupération des paiements');
     }
-    }
+}

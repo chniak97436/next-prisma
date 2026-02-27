@@ -120,3 +120,12 @@ model Avis {
 
   @@map("avis")
 }
+
+// Modèle Newsletter (pour les personnes non inscrites)
+model Newsletter {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  subscribed_at DateTime @default(now())
+  
+  @@map("newsletters")
+}

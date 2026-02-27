@@ -47,10 +47,15 @@ export default function createProduct() {
             method: 'POST',
             body: formData
         });
+        const data = await res.json();
         if (res.ok) {
             console.log("Produit créé avec succès");
+            alert('Produit créé avec succès');
+            // Optionally reset form or redirect
         } else {
-            console.error("Erreur lors de la création du produit:", res.statusText);
+            const errorMessage = data.message || res.statusText;
+            console.error("Erreur lors de la création du produit:", errorMessage);
+            alert(errorMessage);
         }
     };
 

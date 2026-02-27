@@ -26,6 +26,7 @@ export async function PUT(request, { params }) {
             data: body
         });
         return success({ data: user });
+        
     } catch (error) {
         console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
         return internalServerError({ message: 'Erreur interne du serveur' });
