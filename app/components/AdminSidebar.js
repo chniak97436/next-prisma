@@ -11,7 +11,7 @@ import {
   MessageSquare,
   Tag,
   Plus,
-  Settings
+  MailCheck,
 } from 'lucide-react';
 
 const menuItems = [
@@ -62,6 +62,11 @@ const menuItems = [
     href: '/admin/avis',
     icon: MessageSquare,
   },
+  {
+    title: 'Newsletter',
+    href: '/admin/newsletter',
+    icon: MailCheck,
+}
 ];
 
 export default function AdminSidebar() {

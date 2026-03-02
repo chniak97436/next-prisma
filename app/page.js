@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import NavBar from './components/NavBar';
+import Newsletter from './components/Newsletter';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -348,6 +349,7 @@ export default function Home() {
           <p className='text-[#242124] font-bold'>Vous n'avez pas encore passé de commande.</p>
         )}
       </div>
+      <Newsletter />
     </main>
   );
 }

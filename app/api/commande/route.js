@@ -21,15 +21,26 @@ export async function GET(req) {
             // Return commandes for specific user
             console.log('=== GET /api/commande ===');
             console.log('userId demandé:', userId);
+            
+            // Parse userId as integer (now using local DB ID instead of Google ID)
+            const parsedUserId = parseInt(userId, 10);
+            
+            if (isNaN(parsedUserId)) {
+                console.error('Invalid userId:', userId);
+                return badRequest('ID utilisateur invalide');
+            }
+            
+            console.log('userId parsed:', parsedUserId);
+            
             commandes = await prisma.commande.findMany({
                 where: {
-                    user_id: parseInt(userId)
+                    user_id: parsedUserId
                 },
                 orderBy: {
                     created_at: 'desc'
                 }
             });
-            console.log('Commandes trouvées pour user', userId, ':', commandes.length);
+            console.log('Commandes trouvées pour user', parsedUserId, ':', commandes.length);
         }
 
         return success({
