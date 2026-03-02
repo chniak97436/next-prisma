@@ -322,6 +322,7 @@ export default function AdminDashboard() {
     
     // Nettoyer l'URL après un court délai
     setTimeout(() => {
+      
       router.replace('/admin');
     }, 100);
   }, [searchParams, router]);
