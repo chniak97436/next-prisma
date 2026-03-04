@@ -18,7 +18,7 @@ export default function newsletter() {
                     },
                 });
                 const data = await response.json();
-                
+
                 if (data.data) {
                     setNewsletter(data.data);
                 }
@@ -60,37 +60,27 @@ export default function newsletter() {
                 </div>
 
                 {/* Newsletter Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-3">
                     {newsletter.map(news => (
-                        <div key={news.id} className="bg-[#F5CC60] rounded-xl shadow-sm border border-[#F5CC60]/20 p-6 hover:shadow-md transition-shadow duration-200 group">
+                        <div key={news.id} className="bg-[#F5CC60] rounded-xl shadow-sm border border-[#F5CC60]/20 p-4 hover:shadow-md transition-shadow duration-200 group">
                             <div className="flex items-center space-x-4 mb-4">
                                 <div className="p-3 bg-[#292322]/20 rounded-lg group-hover:bg-[#292322]/30 transition-colors duration-200">
                                     <User className="w-6 h-6 text-[#292322]" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-[#292322]">{news.email}</h3>                                  
+                                    <h3 className="text-lg font-semibold text-[#292322]">{news.email}</h3>
                                 </div>
-                            </div>
-
-                            <div className="space-y-2 mb-4">
-                                <div className="flex items-center text-sm text-[#292322]/70">
-                                    <Mail className="w-4 h-4 mr-2" />
-                                    <span>{news.email}</span>
+                                <div className="flex w-full justify-end gap-2 mt-2">
+                                    <Button
+                                        as={Link}
+                                        href={`/admin/newsletter/create/${news.id}`}
+                                        className="flex-1 w-full  items-end justify-end p-3 bg-[#292322] text-[#F5CC60] font-medium rounded-lg hover:bg-[#292322]/90 transition-all duration-200 shadow-sm hover:shadow-md"
+                                        title="envoyer"
+                                    >
+                                        <Mail className="w-5 h-5 mr-3" />
+                                        Envoyer un <strong className="ml-3">Email.</strong>
+                                    </Button>
                                 </div>
-                            </div>
-
-                            <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                                
-                                <Button
-                                    as={Link}
-                                    href={`/admin/newsletter/create/${news.id}`}
-                                    className="flex-1 inline-flex items-center justify-center p-3 bg-[#292322] text-[#F5CC60] font-medium rounded-lg hover:bg-[#292322]/90 transition-all duration-200 shadow-sm hover:shadow-md"
-                                    title="envoyer"
-                                >
-                                    <Mail className="w-5 h-5 mr-3" />
-                                     Envoyer un <strong className="ml-3">Email.</strong> 
-                                </Button>
-                                
                             </div>
                         </div>
                     ))}
