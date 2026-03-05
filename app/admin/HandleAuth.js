@@ -41,7 +41,7 @@ export default function HandleAuth({ setAuth, setLoading, setUser }) {
             setAuth(true);
             setUser(decoded);
         } else {
-          // Non-admin users are redirected to home page, not login
+          // pas-admin users are redirect home page, pas login
           router.push('/');
         }
       } catch (error) {

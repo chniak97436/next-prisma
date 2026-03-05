@@ -21,6 +21,8 @@ model User {
   phone                  String?
   role                   String    @default("customer")
   created_at             DateTime  @default(now())
+  resetPasswordToken     String?   @unique
+  resetPasswordExpires   DateTime?
 
   // Relations
   commande Commande[]
