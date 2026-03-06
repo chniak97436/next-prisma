@@ -6,10 +6,10 @@ export default function Newsletter() {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
+  const [couponCode] = useState('WELCOME10');
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!email) {
       setMessage('Veuillez entrer votre email');
       return;
@@ -38,7 +38,7 @@ export default function Newsletter() {
 
       if (response.ok) {
         setIsSuccess(true);
-        setMessage('Merci de votre inscription !');
+        setMessage('Merci de votre inscription ! Voici votre code de bienvenue');
         setEmail('');
       } else {
         setMessage(data.message || 'Une erreur est survenue');
@@ -51,18 +51,33 @@ export default function Newsletter() {
   };
 
   return (
-    <div className="bg-[#242124] w-[60%] mx-auto p-6 rounded-lg shadow-md">
+    <div className=" bg-[#242124] w-[60%] mx-auto p-6 rounded-lg shadow-md">
       <h3 className="text-[#F5CC60] text-2xl font-bold mb-4">Newsletter</h3>
       <p className="text-gray-300 mb-4">
         Inscrivez-vous pour recevoir nos dernières nouvelles et offres spéciales !
       </p>
-      
-      {isSuccess ? (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+      {message && (
+        <div className="mb-4 text-center font-semibold bg-red-300 border border-red-500 text-red-700 px-4 py-3 rounded">
           {message}
         </div>
+      )}
+      {isSuccess ? (
+        <div className="space-y-6">
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            {message}
+          </div>
+
+          {/* Code promo */}
+
+          <div className="bg-[#F5CC60] p-4 rounded-lg text-center">
+            <p className="text-[#242124] font-bold text-lg">
+              Code promo: <span className="text-2xl">{couponCode}</span>
+            </p>
+            <p className="text-sm text-[#242124]">10% de réduction sur votre première commande</p>
+          </div>
+        </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex  gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
             type="email"
             value={email}
@@ -78,11 +93,7 @@ export default function Newsletter() {
           >
             {isLoading ? 'Inscription...' : "S'inscrire"}
           </button>
-          {message && (
-            <p className={`text-sm ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
-              {message}
-            </p>
-          )}
+
         </form>
       )}
     </div>

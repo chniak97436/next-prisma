@@ -32,7 +32,7 @@ export default function RegisterPage() {
     if (response.ok) {
       setSuccessMessage(data.message);
       // rediriger après un court délai
-      setTimeout(() => router.push('/login'), 15000);
+      setTimeout(() => router.push('/login'), 3000);
     } else {
       setError(data.error || 'Une erreur est survenue.');
     }

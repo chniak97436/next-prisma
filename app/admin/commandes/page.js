@@ -13,10 +13,10 @@ export default function Commandes() {
         const fetchCommandes = async () => {
             try {
                 // TODO: Implement API call when /api/commandes is available
-                // const response = await fetch('/api/commandes');
-                // const data = await response.json();
-                // setCommandes(data.data || []);
-                setCommandes([]); // Placeholder
+                const response = await fetch('/api/commande');
+                const data = await response.json();
+                setCommandes(data.data || []);
+                
             } catch (error) {
                 console.error('Error fetching commandes:', error);
             } finally {
@@ -53,7 +53,7 @@ export default function Commandes() {
                 </div>
 
                 {/* Commandes Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-3">
                     {commandes.map(commande => (
                         <div key={commande.id} className="bg-[#F5CC60] rounded-xl shadow-sm border border-[#F5CC60]/20 p-6 hover:shadow-md transition-shadow duration-200 group">
                             <div className="flex items-center space-x-4 mb-4">

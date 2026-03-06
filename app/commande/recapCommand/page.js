@@ -95,7 +95,7 @@ export default function RecapCommande() {
                 clearCart()
                 setMessage('Votre paiement a été effectué avec succès ! Merci pour votre commande.');
                 
-                // Envoyer un email de confirmation (sans bloquer le processus)
+                // Envoyer un email de confirmation 
                 try {
                     const emailRes = await fetch('/api/send-payment-email', {
                         method: 'POST',
@@ -117,7 +117,7 @@ export default function RecapCommande() {
                 
                 setTimeout(() => {
                     router.push('/');
-                }, 3000);
+                }, 2000);
 
 
             } else {
