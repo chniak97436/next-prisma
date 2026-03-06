@@ -83,7 +83,7 @@ export default function Newsletter() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Votre adresse email"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F5CC60] text-[#F5CC60] bg-[#242124]/[.1]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F5CC60] text-[#F5CC60] bg-[#242124]"
             disabled={isLoading}
           />
           <button

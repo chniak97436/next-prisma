@@ -350,6 +350,25 @@ export default function Home() {
         )}
       </div>
       <Newsletter />
+      {/* Avantages clients */}
+      <div className="space-y-6 my-8">
+        <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-300">
+            <div>
+                <span className="text-3xl">🚚</span>
+                <p>Livraison gratuite</p>
+            </div>
+            <div>
+                <span className="text-3xl">↩️</span>
+                <p>30 jours retours</p>
+            </div>
+            <div>
+                <span className="text-3xl">🔒</span>
+                <p>Paiement sécurisé</p>
+            </div>
+        </div>
+
+        
+      </div>
     </main>
   );
 }
