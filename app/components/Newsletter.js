@@ -41,7 +41,7 @@ export default function Newsletter() {
         setMessage('Merci de votre inscription ! Voici votre code de bienvenue');
         setEmail('');
       } else {
-        setMessage(data.message || 'Une erreur est survenue');
+        setMessage(data.echec || 'Une erreur est survenue');
       }
     } catch (error) {
       setMessage('Une erreur est survenue. Veuillez réessayer.');
@@ -56,7 +56,7 @@ export default function Newsletter() {
       <p className="text-gray-300 mb-4">
         Inscrivez-vous pour recevoir nos dernières nouvelles et offres spéciales !
       </p>
-      {message && (
+      {!isSuccess && message && (
         <div className="mb-4 text-center font-semibold bg-red-300 border border-red-500 text-red-700 px-4 py-3 rounded">
           {message}
         </div>

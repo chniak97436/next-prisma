@@ -32,7 +32,7 @@ export async function POST(request) {
     });
 
     if (existingSubscriber) {
-      return NextResponse.json({ message: 'Vous êtes déjà abonné. Bien essayé...' }, { status: 409 });
+      return NextResponse.json({ echec: 'Vous êtes déjà abonné. Bien essayé...' }, { status: 409 });
     }
     // Créer un nouvel abonné
     const newSubscriber = await prisma.newsletter.create({

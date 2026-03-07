@@ -125,9 +125,12 @@ model Avis {
 
 // Modèle Newsletter (pour les personnes non inscrites)
 model Newsletter {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  subscribed_at DateTime @default(now())
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  subscribed_at  DateTime  @default(now())
+  promoCode       String    @default("WELCOME10")
+  promoCodeUsed   Boolean   @default(false)
+  promoCodeUsedAt DateTime?
   
   @@map("newsletters")
 }
