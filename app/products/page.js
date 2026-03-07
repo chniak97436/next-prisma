@@ -147,7 +147,7 @@ export default function products() {
                                         </svg>
                                         Ajouter au panier
                                     </button>
-                                    <Link href={`/products/${prod.id}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                                    <Link href={`/products/${prod.id}`} className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2  px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
                                         Détails
                                     </Link>
                                 </div>
