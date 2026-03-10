@@ -89,6 +89,11 @@ export default function commande() {
         if (response.ok) {
             setSucces(true)
             setMessage('Vos mise à jour ont été prises en compte.')
+            // Mettre à jour le state user avec les nouvelles valeurs
+            setUser(prev => ({
+                ...prev,
+                ...updatedData
+            }));
         } else {
 
             setErr('une erreur est survenue verifier vos données')
@@ -98,9 +103,25 @@ export default function commande() {
     }
     //----------POST COMMANDE BDD-----------------
     const valideCommande = async () => {
+        // Récupérer les dernières données utilisateur avant de créer la commande
+        let userAddress = user.address;
+        try {
+            const userRes = await fetch(`/api/users/${user.id}`);
+            if (userRes.ok) {
+                const userData = await userRes.json();
+                if (userData.data) {
+                    userAddress = userData.data.address;
+                    // Mettre à jour le state avec les dernières données
+                    setUser(prev => ({ ...prev, ...userData.data }));
+                }
+            }
+        } catch (err) {
+            console.error('Erreur récupération user:', err);
+        }
+
         const priceTotal = parseFloat(getTotalPrice().toFixed(2)) 
         const userid = user.id
-        const address = user.address
+        const address = userAddress
         console.log("click commande")
         
         // Récupérer les produits du panier

@@ -5,6 +5,9 @@ import NavBar from '@/app/components/NavBar';
 import jwt from 'jsonwebtoken'
 import { useCart } from './../components/CartContext';
 import { useRouter } from 'next/navigation';
+import CodePromo from '../components/CodePromo';
+
+
 
 export default function CartPage() {
   const [user, setUser] = useState("");
@@ -18,12 +21,15 @@ export default function CartPage() {
     removeFromCart,
     getTotalPrice,
     getTotalItems,
-    clearCart
+    clearCart,
+    getTotalPriceWithRemise,
+    remise,
   } = useCart();
 
-  //--------------------------------------------------------------------------------------------------
-  // ETAPE 1: État pour stocker le stock de chaque produit
-  //--------------------------------------------------------------------------------------------------
+  const prixOriginal = getTotalPrice();
+  const prixAvecRemise = getTotalPriceWithRemise();
+  // etat pour stocker le stock de chaque produit
+
   // On utilise un objet (ou Map) pour stocker le stock de chaque produit
   // Clé = id du produit, Valeur = quantité en stock
   // Exemple: { 1: 10, 2: 5, 3: 0 } signifie:
@@ -32,9 +38,6 @@ export default function CartPage() {
   //   - Produit ID 3: 0 en stock (épuisé)
   const [stockMap, setStockMap] = useState({});
 
-  //--------------------------------------------------------------------------------------------------
-  // ETAPE 2: Décodage du JWT pour récupérer les infos utilisateur
-  //--------------------------------------------------------------------------------------------------
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -43,6 +46,7 @@ export default function CartPage() {
         setUser({
           name: decoded.name?.name || decoded.name || '',
           role: decoded.name?.role || decoded.role || '',
+          email: decoded.email?.email || decoded.email || '',
         });
       } catch (error) {
         console.error('Error decoding token:', error);
@@ -50,13 +54,9 @@ export default function CartPage() {
     }
   }, []);
 
-  //--------------------------------------------------------------------------------------------------
-  // ETAPE 3: Fonction pour récupérer le stock de TOUS les produits du panier
-  //--------------------------------------------------------------------------------------------------
-  // BUG CORRIGÉ: Avant, le code faisait `cart.id` mais cart est un TABLEAU (array), pas un objet!
-  // Donc cart.id était undefined → l'API retournait une erreur 400
-  // 
-  // Maintenant, on parcourt chaque item du panier et on récupère son stock individuellement
+
+  // Fonction pour récupérer le stock de TOUS les produits du panier
+  //  on parcour chaque item du panier et on récupère son stock individuellement
   const fetchStock = async () => {
     // On crée un objet vide pour stocker les stocks
     const stocks = {};
@@ -64,16 +64,12 @@ export default function CartPage() {
     // On parcourt chaque produit dans le panier
     for (const item of cart) {
       try {
-        // On utilise l'ID de l'item (item.id) pour appeler l'API
-        const response = await fetch(`./api/products/${item.id}`);
 
-        // Si la réponse n'est pas OK, on lance une erreur
+        const response = await fetch(`./api/products/${item.id}`);
         if (!response.ok) {
           console.warn(`Erreur pour le produit ${item.id}: ${response.status}`);
           continue; // On passe au produit suivant
         }
-
-        // On récupère les données JSON
         const data = await response.json();
 
         // L'API retourne { data: { ..., stock_quantity: X } }
@@ -94,53 +90,33 @@ export default function CartPage() {
     setStockMap(stocks);
   };
 
-  //--------------------------------------------------------------------------------------------------
-  // ETAPE 4: useEffect pour appeler fetchStock quand le panier change
-  //--------------------------------------------------------------------------------------------------
-  // AVANT: fetchStock() était appelé directement dans le composant
-  // → Ça causait un appel à chaque render (boucle infinie potentielle!)
-  // 
-  // APRÈS: On utilise useEffect qui s'exécute seulement quand 'cart' change
+  // useEffect pour appeler fetchStock quand le panier change
   useEffect(() => {
     // On n'appelle l'API que si le panier n'est pas vide
     if (cart && cart.length > 0) {
       fetchStock();
     }
-  }, [cart]); // Dépendance: on re-exécute si cart change
+  }, [cart]);
 
-  //--------------------------------------------------------------------------------------------------
-  // ETAPE 5: Fonction pour vérifier le stock d'un produit spécifique
-  //--------------------------------------------------------------------------------------------------
-  // Cette fonction retourne le stock d'un produit en utilisant son ID
-  // Elle retourne undefined si le stock n'est pas encore chargé
+  //  retourne le stock d un produit en utilisant son ID
   const getProductStock = (productId) => {
     return stockMap[productId];
   };
-
-  //--------------------------------------------------------------------------------------------------
-  // ETAPE 6: Affichage des logs pour le débogage
-  //--------------------------------------------------------------------------------------------------
   console.log("Contenu du panier :", cart);
   console.log("StockMap (stock de chaque produit) :", stockMap);
 
-  //--------------------------------------------------------------------------------------------------
-  // ETAPE 7: Vérification du stock pour chaque produit du panier
-  //--------------------------------------------------------------------------------------------------
-  // On utilise useEffect pour vérifier le stock APRÈS qu'il soit chargé
-  // Cela garantit que stockMap contient les données avant la vérification
 
-  // État pour stocker les produits avec problème de stock
+  // Vérification du stock pour chaque produit du panier
   const [stockWarnings, setStockWarnings] = useState([]);
 
   useEffect(() => {
-    // On ne vérifie que si le panier n'est pas vide et qu'on a des données de stock
+
     if (!cart || cart.length === 0) return;
 
     // Vérifier si on a au moins un produit avec un stock chargé
     const hasStockData = cart.some(item => stockMap[item.id] !== undefined);
     if (!hasStockData) return;
 
-    // Parcourir chaque produit du panier pour vérifier le stock
     const warnings = [];
 
     for (const item of cart) {
@@ -246,8 +222,8 @@ export default function CartPage() {
                               onClick={() => addToCart(item)}
                               disabled={isDisabled}
                               className={`px-2 py-1 rounded ${isDisabled
-                                  ? 'bg-[#292322]/10 text-[#292322]/50 cursor-not-allowed'
-                                  : 'bg-[#292322]/20 hover:bg-[#292322]/30 text-[#292322]'
+                                ? 'bg-[#292322]/10 text-[#292322]/50 cursor-not-allowed'
+                                : 'bg-[#292322]/20 hover:bg-[#292322]/30 text-[#292322]'
                                 }`}
                             >
                               +
@@ -295,9 +271,16 @@ export default function CartPage() {
                 Vider le panier
               </button>
 
+              <CodePromo />
               <div className="text-right">
                 <p className="text-[#292322]/70">Total ({getTotalItems()} articles) :</p>
-                <p className="text-3xl font-extrabold text-[#292322]">{getTotalPrice().toFixed(2)} €</p>
+                <p className={`text-3xl text-[#292322] font-bold ${remise > 0 ? 'line-through text-gray-500' : ''}`}>
+    € {getTotalPrice().toFixed(2)}
+</p>
+                {/* Afficher le prix avec remise si elle existe */}
+                {remise > 0 && (
+                  <p className="text-md font-extrabold text-red-500">Prix avec {remise * 100}% de réduction <br/> {prixAvecRemise.toFixed(2)}€</p>
+                )}
                 <button onClick={goToPay} className="mt-4 w-full md:w-auto px-8 py-3 bg-[#292322] text-[#F5CC60] font-bold rounded-lg hover:bg-[#292322]/80 transition">
                   Passer à la caisse
                 </button>

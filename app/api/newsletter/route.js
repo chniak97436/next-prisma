@@ -4,11 +4,29 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // GET - Récupérer tous les abonnés actifs
-export async function GET() {
- 
+export async function GET(request) {
+  const { searchParams } = new URL(request.url)
+  const promo = searchParams.get('promoCodeUsed')
+
+  // Si promoCodeUsed=true, retourner seulement les emails qui ont utilisé leur code promo
+  if (promo === 'true') {
+    try {
+      const promoUsed = await prisma.newsletter.findMany({
+        where: { promoCodeUsed: true },
+        select: { email: true }
+      })
+      return NextResponse.json({
+        emails: promoUsed.map(i => i.email)
+      })
+    } catch (error) {
+      console.error('Erreur:', error);
+      return NextResponse.json({ message: 'Erreur serveur' }, { status: 500 });
+    }
+  }
+
+  // Sinon, retourner tous les abonnés (comportement original)
   try {
     const subscribers = await prisma.newsletter.findMany();
-    
     return NextResponse.json({ data: subscribers }, { status: 200 });
   } catch (error) {
     console.error('Erreur lors de la récupération des abonnés:', error);

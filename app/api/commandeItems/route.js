@@ -79,6 +79,26 @@ export async function POST(request) {
           data: itemsData
         });
         console.log('Résultat createMany:', commandeItems);
+        
+        // Mettre à jour le stock pour chaque produit (solution robuste)
+        for (let i = 0; i < productId.length; i++) {
+          const pid = productId[i];
+          const qty = parseInt(productQuantite[i]);
+          
+          // Récupérer le produit actuel
+          const product = await prisma.product.findUnique({
+            where: { id: pid }
+          });
+          
+          if (product) {
+            const newStock = Math.max(0, product.stock_quantity - qty);
+            await prisma.product.update({
+              where: { id: pid },
+              data: { stock_quantity: newStock }
+            });
+            console.log(`Stock mis à jour pour le produit ${pid}: ${product.stock_quantity} -> ${newStock}`);
+          }
+        }
       } catch (err) {
         console.error('Erreur createMany:', err);
         throw err;
@@ -93,6 +113,20 @@ export async function POST(request) {
           unit_price: parseFloat(priceUnique)
         },
       });
+      
+      // Mettre à jour le stock pour le produit unique
+      const product = await prisma.product.findUnique({
+        where: { id: productId }
+      });
+      
+      if (product) {
+        const newStock = Math.max(0, product.stock_quantity - parseInt(productQuantite));
+        await prisma.product.update({
+          where: { id: productId },
+          data: { stock_quantity: newStock }
+        });
+        console.log(`Stock mis à jour pour le produit ${productId}: ${product.stock_quantity} -> ${newStock}`);
+      }
     }
      
     console.log('Items créés avec succès');

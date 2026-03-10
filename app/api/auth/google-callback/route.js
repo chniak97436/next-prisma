@@ -46,7 +46,8 @@ export async function GET(request) {
           first_name: googleUser.name ? googleUser.name.split(' ')[0] : null,
           last_name: googleUser.name && googleUser.name.includes(' ') 
             ? googleUser.name.split(' ').slice(1).join(' ') 
-            : null,
+            : null
+         
         }
       });
       console.log('Utilisateur créé avec ID:', localUser.id);

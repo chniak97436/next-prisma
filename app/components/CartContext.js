@@ -78,6 +78,7 @@ export const CartProvider = ({ children }) => {
   const clearCart = () => {
     setCart([]);
   };
+  const [remise, setRemise] = useState(0);
 
   const value = {
     cart,
@@ -87,6 +88,12 @@ export const CartProvider = ({ children }) => {
     getTotalItems,
     getTotalPrice,
     clearCart,
+    setRemise,
+    remise,
+    getTotalPriceWithRemise: () => {
+    const total = cart.reduce((total, item) => total + item.price * item.quantite, 0);
+    return total * (1 - remise);
+}
   };
 
   return (

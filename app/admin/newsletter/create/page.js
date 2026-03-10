@@ -1,5 +1,5 @@
 "use client"
-import { Group, Mail, User, UserSearch } from 'lucide-react';
+import { Mail, UserSearch } from 'lucide-react';
 import React, { useState } from 'react'
 
 
@@ -15,7 +15,7 @@ export default function createNewsletter() {
     const data = await res.json()
     // API returns { data: [...] }, so access data.data
     const subscribers = data.data || []
-    const to = subscribers.map((mail) => mail.email)
+    const to = subscribers.map((i) => i.email)
     console.log("Emails to send:", to)
 
     // Send emails aux users inscris avec l array (to) 

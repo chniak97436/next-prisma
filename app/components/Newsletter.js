@@ -7,6 +7,7 @@ export default function Newsletter() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [couponCode] = useState('WELCOME10');
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 

@@ -1,4 +1,4 @@
-import { success, badRequest, internalServerError } from "@/lib/utils/response";
+import { success, badRequest } from "@/lib/utils/response";
 import nodemailer from 'nodemailer';
 
 export async function POST(request) {

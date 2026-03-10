@@ -52,10 +52,17 @@ export default function newsletter() {
                     </div>
                     <Link
                         href="/admin/newsletter/create"
-                        className="inline-flex items-center px-4 py-2 bg-[#F5CC60] text-[#292322] font-semibold rounded-lg hover:bg-[#F5CC60]/90 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                        className="inline-flex items-center px-2 py-2 bg-[#F5CC60] text-[#292322] font-semibold rounded-lg hover:bg-[#F5CC60]/90 transition-colors duration-200 shadow-lg hover:shadow-xl"
                     >
                         <Plus className="w-5 h-5 mr-2" />
                         Envoyer une Newsletter
+                    </Link>
+                    <Link
+                        href="/admin/newsletter/code-promo"
+                        className="inline-flex items-center px-2 py-2 bg-[#F5CC60] text-[#292322] font-semibold rounded-lg hover:bg-[#F5CC60]/90 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                    >
+                        <Plus className="w-5 h-5 mr-2" />
+                        Envoyer un code promo
                     </Link>
                 </div>
 

@@ -57,6 +57,8 @@ export default function RecapCommande() {
     const {
         cart,
         getTotalPrice,
+        getTotalPriceWithRemise,
+        remise,
         getTotalItems,
         clearCart
     } = useCart()
@@ -71,7 +73,7 @@ export default function RecapCommande() {
         e.preventDefault();
 
         try {
-            const comandeId = commande.id.length > 0 ? commande.id[0] : commande.id; // Handle both array and single value
+            const comandeId = commande.id.length > 0 ? commande.id[0] : commande.id; 
             const productId = cart.map((item) => item.id)
             const productQuantite = cart.map((item) => item.quantite)
             const priceUnique = cart.map((item) => item.price)
@@ -134,6 +136,10 @@ export default function RecapCommande() {
 
         console.log("Paiement soumis pour la commande:", commande.length > 0 ? commande[0].id : commande.id);
 
+    }
+    //-------------------RESET CODE PROMO SI EXIXTE
+    const resetPromo = async ()=>{
+        
     }
     //----------------UPDATE STOCK----------------
     const updateStock = async (productId, quantite) => {
@@ -257,9 +263,9 @@ export default function RecapCommande() {
                         {/* Bouton Payer */}
                         <div className="mt-6 flex justify-center">
                             <button
-                                onClick={() => cart.forEach(item => updateStock(item.id, item.quantite))}
                                 type="submit"
                                 className='w-full mb-20 md:w-auto px-12 py-4 bg-[#F5CC60] text-[#292322] font-bold text-lg rounded-lg shadow-lg hover:bg-[#F5CC60]/90 hover:scale-105 transition-all duration-200 focus:ring-4 focus:ring-[#F5CC60]/50'
+                                onClick={resetPromo}
                             >
                                 Payer
                             </button>

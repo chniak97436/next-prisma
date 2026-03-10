@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -8,30 +8,26 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-// Modèle Utilisateur
 model User {
-  id                     Int       @id @default(autoincrement())
-  username               String   
-  email                  String    @unique
-  emailVerified          DateTime?
-  password_hash          String
-  first_name             String?
-  last_name              String?
-  address                String?
-  phone                  String?
-  role                   String    @default("customer")
-  created_at             DateTime  @default(now())
-  resetPasswordToken     String?   @unique
-  resetPasswordExpires   DateTime?
-
-  // Relations
-  commande Commande[]
-  avis     Avis[]
+  id                   Int        @id @default(autoincrement())
+  username             String
+  email                String     @unique
+  emailVerified        DateTime?
+  password_hash        String
+  first_name           String?
+  last_name            String?
+  address              String?
+  phone                String?
+  role                 String     @default("customer")
+  created_at           DateTime   @default(now())
+  resetPasswordToken   String?    @unique
+  resetPasswordExpires DateTime?
+  avis                 Avis[]
+  commande             Commande[]
 
   @@map("users")
 }
 
-// Modèle Catégorie (hiérarchique)
 model Category {
   id          Int        @id @default(autoincrement())
   name        String     @unique
@@ -39,98 +35,86 @@ model Category {
   parent_id   Int?
   parent      Category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id], onDelete: Cascade)
   children    Category[] @relation("CategoryHierarchy")
-
-  // Relations
-  products Product[]
+  products    Product[]
 
   @@map("categories")
 }
 
-// Modèle Produit
 model Product {
-  id             Int       @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   name           String
   description    String?
   price          Float
-  stock_quantity Int       @default(0)
+  stock_quantity Int            @default(0)
   category_id    Int?
-  category       Category? @relation(fields: [category_id], references: [id], onDelete: SetNull)
   image_url      String?
-  created_at     DateTime  @default(now())
-
-  // Relations
-  commande_items CommandeItem[]
+  created_at     DateTime       @default(now())
   avis           Avis[]
+  commande_items CommandeItem[]
+  category       Category?      @relation(fields: [category_id], references: [id])
 
   @@map("products")
 }
 
-// Modèle Commande
 model Commande {
   id               Int            @id @default(autoincrement())
   user_id          Int
-  user             User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
   total_amount     Float
   status           String         @default("attente")
   shipping_address String?
   created_at       DateTime       @default(now())
-
-  // Relations
-  commande_items CommandeItem[]
-  payment        Payment?
+  user             User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  commande_items   CommandeItem[]
+  payment          Payment?
 
   @@map("commande")
 }
 
-// Modèle Élément de Commande (table de jonction pour commandes et produits)
 model CommandeItem {
   id          Int      @id @default(autoincrement())
   commande_id Int
-  commande    Commande @relation(fields: [commande_id], references: [id], onDelete: Cascade)
   product_id  Int
-  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
   quantity    Int
   unit_price  Float
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  commande    Commande @relation(fields: [commande_id], references: [id], onDelete: Cascade)
 
   @@map("commande_items")
 }
 
-// Modèle Paiement
 model Payment {
-  id             Int           @id @default(autoincrement())
-  commande_id    Int           @unique
-  commande       Commande      @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  id             Int      @id @default(autoincrement())
+  commande_id    Int      @unique
   payment_method String
   amount         Float
-  status         String        @default("attente")
+  status         String   @default("attente")
   transaction_id String?
-  created_at     DateTime      @default(now())
+  created_at     DateTime @default(now())
+  commande       Commande @relation(fields: [commande_id], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }
 
-// Modèle Avis
 model Avis {
   id         Int      @id @default(autoincrement())
   user_id    Int
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   product_id Int
-  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
   note       Int
   comment    String?
   created_at DateTime @default(now())
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("avis")
 }
 
-// Modèle Newsletter (pour les personnes non inscrites)
 model Newsletter {
   id              Int       @id @default(autoincrement())
   email           String    @unique
-  subscribed_at  DateTime  @default(now())
+  subscribed_at   DateTime  @default(now())
   promoCode       String    @default("WELCOME10")
   promoCodeUsed   Boolean   @default(false)
   promoCodeUsedAt DateTime?
-  
+
   @@map("newsletters")
 }
