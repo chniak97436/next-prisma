@@ -18,11 +18,12 @@ export default function commande() {
     const [succes, setSucces] = useState(false)
     const [message, setMessage] = useState('')
     const [err, setErr] = useState('')
-    const {
-        removeFromCart,
+    const {       
         getTotalPrice,
-        getTotalItems,
+        getTotalPriceWithRemise,     
       } = useCart();
+    
+    
     const router = useRouter()
 
 
@@ -119,7 +120,8 @@ export default function commande() {
             console.error('Erreur récupération user:', err);
         }
 
-        const priceTotal = parseFloat(getTotalPrice().toFixed(2)) 
+        const priceTotal = parseFloat(getTotalPrice().toFixed(2))
+        const priceWithRemise = parse(getTotalPriceWithRemise().tofixed(2)) 
         const userid = user.id
         const address = userAddress
         console.log("click commande")
@@ -135,7 +137,7 @@ export default function commande() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userid, address, priceTotal }),
+                body: JSON.stringify({ userid, address, priceTotal,priceWithRemise }),
             })
             
             const data = await res.json()
@@ -193,7 +195,7 @@ export default function commande() {
         <div className='min-h-screen bg-[#292322]  '>
             <NavBar user={{ name: user?.name || '' }} />
 
-            <div className="pt-20 px-6   text-[#F5CC60]">
+            <div className="pt-20 pb-20   text-[#F5CC60]">
                 <h1 className="text-3xl text-center font-bold text-[#F5CC60] mb-10">Informations personnelles</h1>
                 <div className='max-w-2xl mx-auto'>
                     {user ? (

@@ -63,14 +63,14 @@ export default function Newsletter() {
         </div>
       )}
       {isSuccess ? (
-        <div className="space-y-6">
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+        <div className="space-y-6 transition-all duration-500">
+          <div className="bg-green-100 border text-center border-green-400 text-green-700 px-4 py-3 rounded">
             {message}
           </div>
 
           {/* Code promo */}
 
-          <div className="bg-[#F5CC60] p-4 rounded-lg text-center">
+          <div className="bg-[#F5CC60] p-4 rounded-lg text-center transition-all duration-500">
             <p className="text-[#242124] font-bold text-lg">
               Code promo: <span className="text-2xl">{couponCode}</span>
             </p>

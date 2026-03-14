@@ -26,8 +26,8 @@ export default function CartPage() {
     remise,
   } = useCart();
 
-  const prixOriginal = getTotalPrice();
-  const prixAvecRemise = getTotalPriceWithRemise();
+  const prixOriginal = getTotalPrice().toFixed(2);
+  const prixAvecRemise = getTotalPriceWithRemise().toFixed(2);
   // etat pour stocker le stock de chaque produit
 
   // On utilise un objet (ou Map) pour stocker le stock de chaque produit
@@ -168,6 +168,7 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="space-y-6">
+            
             {/* Liste des articles */}
             <div className="bg-[#F5CC60] rounded-xl shadow-sm overflow-hidden">
               {cart.map((item) => (
@@ -271,15 +272,19 @@ export default function CartPage() {
                 Vider le panier
               </button>
 
+              {/* -----COMPONENT Code promotion */}
               <CodePromo />
+              {/* ----------------------------- */}
+
               <div className="text-right">
                 <p className="text-[#292322]/70">Total ({getTotalItems()} articles) :</p>
-                <p className={`text-3xl text-[#292322] font-bold ${remise > 0 ? 'line-through text-gray-500' : ''}`}>
-    € {getTotalPrice().toFixed(2)}
-</p>
+                <p className={`text-3xl text-[#292322] font-bold ${remise > 0 ? 'line-through text-red-500 text-sm'  : ''}`}>
+                  € {prixOriginal}
+                </p>
+
                 {/* Afficher le prix avec remise si elle existe */}
                 {remise > 0 && (
-                  <p className="text-md font-extrabold text-red-500">Prix avec {remise * 100}% de réduction <br/> {prixAvecRemise.toFixed(2)}€</p>
+                  <p className="text-lg  font-bold text-green-500">Prix avec {remise * 100}% de réduction :<br/> {prixAvecRemise}€</p>
                 )}
                 <button onClick={goToPay} className="mt-4 w-full md:w-auto px-8 py-3 bg-[#292322] text-[#F5CC60] font-bold rounded-lg hover:bg-[#292322]/80 transition">
                   Passer à la caisse
