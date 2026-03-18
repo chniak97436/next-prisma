@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter} from 'next/navigation';
 import jwt from 'jsonwebtoken'
 import { CircleUser,PencilLine } from 'lucide-react';
 import Link from 'next/link';
@@ -11,7 +11,7 @@ export default function userCustomer() {
   const [objUser, setObjUser] = useState([]);
   const [disabled,setDisabled] = useState(true)
   const router = useRouter();
-  const searchParams = useSearchParams();
+  
 
   useEffect(() => {
 
