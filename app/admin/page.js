@@ -45,12 +45,14 @@ export default function AdminDashboard() {
     const email = searchParams.get('email');
     const name = searchParams.get('name');
     const role = searchParams.get('role');
+    const idUser = searchParams.get('id')
     
     console.log('Données de l\'URL:', { 
       token: token ? token.substring(0, 20) + '...' : null, 
       email, 
       name, 
-      role 
+      role,
+      idUser 
     });
 
     // Si pas de token dans l'URL, marquer comme traité immédiatement
@@ -66,6 +68,7 @@ export default function AdminDashboard() {
     if (email) localStorage.setItem('email', email);
     if (name) localStorage.setItem('name', name);
     if (role) localStorage.setItem('role', role);
+    if (idUser) localStorage.setItem('id', idUser)
     
     console.log('Vérification après stockage:');
     console.log('localStorage token:', localStorage.getItem('token')?.substring(0, 20) + '...');
@@ -96,8 +99,8 @@ export default function AdminDashboard() {
       const token = localStorage.getItem('token');
       const role = localStorage.getItem('role');
       const email = localStorage.getItem('email');
-
-      console.log('Vérification auth - token:', !!token, 'role:', role, 'email:', email);
+      const idUser = localStorage.getItem('id')
+      console.log('Vérification auth - token:', !!token, 'role:', role, 'email:', email, 'id:',idUser);
 
       if (!token) {
         console.log('Pas de token, redirection vers login');

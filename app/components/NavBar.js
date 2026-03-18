@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { isAdmin, isCustomer } from '../../lib/utils/auth';
 import { useCart } from './CartContext';
 import { jwtDecode } from 'jwt-decode';
-
+import {CircleUser} from 'lucide-react'
 export default function NavBar({ user: propUser }) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -102,25 +102,7 @@ export default function NavBar({ user: propUser }) {
             <Link href="/products" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
               Tous les produits
             </Link>
-            {/* {(!user || isCustomer(user?.role)) && (
-              <select
-                onChange={(e) => {
-                  if (e.target.value) {
-                    router.push(`/categories/${e.target.value}`);
-                  }
-                }}
-                className="bg-transparent text-white border border-white  px-3 py-2 text-sm font-medium transition-all duration-300"
-                defaultValue=""
-              >
-                <option className="text-black bg-transparent " value="" disabled>Choisir une catégorie</option>
-
-                {stats.categories.map((category) => (
-                  <option key={category.id} value={category.name} className='text-black border-none bg-transparent'>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            )} */}
+            
             {!user ? (
               <>
                 <Link href="/login" className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
@@ -148,6 +130,12 @@ export default function NavBar({ user: propUser }) {
                   <button onClick={handleLogout} className="hover:text-yellow-300 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:bg-white hover:bg-opacity-10">
                     Deconnexion
                   </button>
+                )}
+                {user.role == "admin" ? ("") : (
+                <Link href='/userCustomer'
+                      alt='mon-compte'>
+                        <CircleUser/>
+                </Link>
                 )}
                 {getTotalItems() > 0 && (
                   <div className="relative">

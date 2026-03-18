@@ -1,9 +1,12 @@
-# Task: Add French mobile phone number regex validation
+# TODO: Glassmorphism sur formulaire userCustomer ✓
 
-## Steps:
-1. [x] Create TODO.md with plan steps
-2. [x] Edit lib/utils/validation.js to add validatePhone function
-3. [x] Confirm plan with user (done)
-4. [x] Update TODO.md with progress
-5. [x] Test validation (returns true for valid French mobile like '0612345678')
-6. [x] Complete task
+## Plan approuvé (Option A)
+
+### Étapes:
+1. [✅] Ajouter classes CSS glassmorphism dans `app/globals.css` *(déjà existantes)*
+2. [✅] Éditer formulaire dans `app/userCustomer/page.js`
+3. [✅] Tester: `npm run dev`
+4. [✅] Complété
+
+**Status: MISSION TERMINÉE 🎉**
+

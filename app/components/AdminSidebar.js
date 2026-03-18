@@ -10,7 +10,6 @@ import {
   CreditCard,
   MessageSquare,
   Tag,
-  Plus,
   MailCheck,
 } from 'lucide-react';
 

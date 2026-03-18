@@ -5,7 +5,7 @@ import NavBar from './components/NavBar';
 import Newsletter from './components/Newsletter';
 import Image from 'next/image';
 import Link from 'next/link';
-
+import {Truck,Undo2,CreditCard} from 'lucide-react'
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -362,22 +362,20 @@ export default function Home() {
 
       {/* section Avantages clients */}
       <div className="space-y-6 my-8">
-        <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-300">
+        <div className="grid grid-cols-3 gap-2 text-center text-xs text-[#F5CC60] ">
           <div>
-            <span className="text-3xl">🚚</span>
+            <Truck className='w-full h-8'/>
             <p>Livraison gratuite</p>
           </div>
           <div>
-            <span className="text-3xl">↩️</span>
+            <Undo2 className=' w-full h-8'/>
             <p>30 jours retours</p>
           </div>
           <div>
-            <span className="text-3xl">🔒</span>
+            <CreditCard className='  w-full h-8'/>
             <p>Paiement sécurisé</p>
           </div>
         </div>
-
-
       </div>
 
     </main>

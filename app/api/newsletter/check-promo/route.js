@@ -29,7 +29,7 @@ export async function POST(request) {
 
     if (!promo) {
         return NextResponse.json(
-            { valide: false, message: "Newsletter non trouvée" },
+            { valide: false, message: "Email non trouvée" },
             { status: 404 }
         );
     }
