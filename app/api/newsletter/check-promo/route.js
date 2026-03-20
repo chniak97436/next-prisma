@@ -80,6 +80,7 @@ export async function PUT(request){
             },
             data : {
                 promoCodeUsed: true,
+                promoCodeUsedAt : new Date()
             }
         })
         return NextResponse.json({success: true})

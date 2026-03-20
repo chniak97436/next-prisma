@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { prisma } from '@/lib/prisma';
 
+
 export async function PUT(request) {
 
     const body = await request.json()
@@ -20,7 +21,7 @@ export async function PUT(request) {
         from: process.env.SMTP_USER,
         to: to,
         subject: subject,
-        html: text + "<br/>TON CODE : " + promoCode
+        html: text + "<br/>TON CODE promotion : ( " + promoCode + " )"
     };
     const send = await transporter.sendMail(mailOptions);
     if (send) {
@@ -38,5 +39,25 @@ export async function PUT(request) {
         return NextResponse.json({ succes: false })
     }
 
+}
+
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const email = searchParams.get('email');
+  if (!email) {
+    return NextResponse.json({ valide: false, message: 'Email requis' }, { status: 400 });
+  }
+  const promo = await prisma.newsletter.findUnique({ 
+    where: { email } 
+  });
+  if (!promo) {
+    return NextResponse.json({ valide: false, message: 'Aucun abonnement newsletter trouvé' });
+  }
+  return NextResponse.json({ 
+    valide: !promo.promoCodeUsed, 
+    promoCode: promo.promoCode, 
+    used: !!promo.promoCodeUsedAt,
+    promoCodeUsedAt: promo.promoCodeUsedAt
+  });
 }
 

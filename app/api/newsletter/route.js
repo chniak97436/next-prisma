@@ -54,7 +54,8 @@ export async function POST(request) {
     }
     // Créer un nouvel abonné
     const newSubscriber = await prisma.newsletter.create({
-      data: { email }
+      data: { 
+        email }
     });
 
     return NextResponse.json({ newSubscriber, message: 'Abonnement créé avec succès' }, { status: 201 });
