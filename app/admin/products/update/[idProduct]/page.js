@@ -114,7 +114,7 @@ export default function updateProduct({ params }) {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Modifier le Produit</h1>
         
-        <form className="p-6 border rounded-lg shadow-lg bg-white" onSubmit={updateProduct}>
+        <form className="p-6 border rounded-lg shadow-lg text-gray-400 bg-white" onSubmit={updateProduct}>
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">Nom du produit</label>
             <input

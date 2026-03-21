@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import jwt from 'jsonwebtoken'
 import { CircleUser, PencilLine, Send } from 'lucide-react';
-import Link from 'next/link';
 
 export default function userCustomer({ params }) {
   const [user, setUser] = useState(null);
@@ -160,7 +159,7 @@ export default function userCustomer({ params }) {
 
         <div className="">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-[#F5CC60] bg-clip-text text-transparent animate-slide-in-left">
-            Mon Compte
+            Mon Compte 
           </h2>
         </div>
         {/* ----------------------------------username------------------------------ */}

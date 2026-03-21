@@ -96,7 +96,7 @@ export default function putUserId({ params }) {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">Modifier l'Utilisateur</h1>
-        <form className="p-6 border rounded-lg shadow-lg bg-white" onSubmit={putUsers}>
+        <form className="p-6 border rounded-lg shadow-lg text-gray-400 bg-white" onSubmit={putUsers}>
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">Nom d'utilisateur</label>
             <input
